@@ -13,7 +13,7 @@ Options:
 import sys, os
 sys.path.insert(0, '/home/mark/src/ypconfig/lib')
 
-from ypconfig import Config
+from ypconfig import Config, Netlink
 from docopt import docopt
 from schema import Schema, And, Or, Use, SchemaError, Optional
 from pprint import pprint
@@ -32,11 +32,12 @@ if __name__ == '__main__':
     except SchemaError as e:
         sys.exit(e)
 
-    try:
-        cfgdoc = Config.Get(args['--cfg'])
-    except FileNotFoundError as e:
-        print(e)
-        sys.exit(1)
+    if not args['createconfig']:
+        try:
+            cfgdoc = Config.Get(args['--cfg'])
+        except FileNotFoundError as e:
+            print(e)
+            sys.exit(1)
 
     if args['configtest']:
         try:
@@ -46,3 +47,6 @@ if __name__ == '__main__':
             sys.exit(1)
         else:
             print("Configuration is ok!")
+    elif args['createconfig']:
+        cfg = Netlink.GetNow()
+        pprint(Config.Validate(cfg))
