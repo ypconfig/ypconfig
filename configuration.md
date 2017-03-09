@@ -1,6 +1,8 @@
-ypconfig reads a yaml-file (defaults to /etc/ypconfig/interfaces.yml). The configfile has the following syntax:
+ypconfig reads a yaml-file (defaults to /etc/ypconfig/interfaces.yml) and tries to configure the system accordingly. The configfile has the following syntax:
 
 An array of interfaces, where each interface has the following options:
+- description:
+  A description we can read via snmpd
 - addresses:
   An array of addresses in the syntax address/prefixlen
 - adminstate:
@@ -13,7 +15,9 @@ An array of interfaces, where each interface has the following options:
   - The value ```vlanid``` is an integer for the vlan id.
   - The value ```name``` is the name of the interface, defaults to ```parent.vlanid```
 - ratelimit:
-  Or a single float-value where this value is the ratelimit in mbit/s, or a ```in``` value and/or ```out``` value, to differentiate between incoming and outgoing ratelimits.
+  Or a single float-value where this value is the ratelimit in bit/s, or a ```in``` value and/or ```out``` value, to differentiate between incoming and outgoing ratelimits. Optionally a unit can be added (KMG).
+- slaves:
+  An array with interfaces you want to bond into this interface.
 
 
 EXAMPLE 1
@@ -74,10 +78,25 @@ Two interfaces, eth0 with jumbo frames and eth1 with a ratelimit of 10mbit up an
       - 192.168.2.4/24
       - fd00::192:168:2:4/64
       ratelimit:
-        up: 10
-        down: 100
+        up: 10M
+        down: 100M
     lo:
       addresses:
       - 127.0.0.1/8
       - ::1/128
       mtu: 65536
+
+EXAMPLE 4
+=========
+
+Create a bond-interface with two slaves
+
+    bond0:
+      adminstate: UP
+      mtu: 9000
+      addresses:
+      - 192.168.1.4/24
+      - fd00::192:168:1:4/64
+      slaves:
+      - eth0
+      - eth1
