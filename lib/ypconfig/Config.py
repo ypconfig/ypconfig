@@ -21,7 +21,7 @@ def Get(cfg):
 
 def Validate(document):
     def ipv4(teststring):
-        regex = re.compile('^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)/([1-9]|1[0-9]|2[0-4])$')
+        regex = re.compile('^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)/([1-9]|[12][0-9]|3[0-2])$')
 
         if regex.match(teststring):
             return teststring
@@ -47,16 +47,25 @@ def Validate(document):
             return ipv4(ip)
 
     def Adminstate(state):
-        if state.upper() in ['UP', 'DOWN']:
+        if type(int()) == type(state):
+            state = list(['DOWN', 'UP'])[state]
+
+        if state.upper() in ['UP', 'DOWN', 'UNKNOWN']:
             return state.upper()
         else:
-            raise ValueError("Adminstate must be UP or DOWN")
+            raise ValueError("Adminstate must be UP or DOWN, not %s" % (state))
 
     def Mtu(mtu):
         if 65536 >= mtu > 1280:
             return mtu
         else:
             raise ValueError("Invalid value for MTU")
+
+    def VlanId(vlanid):
+        if 4096 >= vlanid > 0:
+            return vlanid
+        else:
+            raise ValueError("Invalid value for vlanid")
 
     def Interface(iface, iname):
         ret = {}
@@ -94,6 +103,13 @@ def Validate(document):
                 ret['mtu'] = 65536
             else:
                 ret['mtu'] = '1500'
+
+        try:
+            ret['vlanid'] = VlanId(iface['vlanid'])
+        except ValueError as e:
+            raise e
+        except KeyError:
+            pass
 
         try:
             if iface['vlans']:
