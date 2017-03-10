@@ -3,7 +3,7 @@
 
 """Usage:
   ypconfig configtest [--cfg=configfile]
-  ypconfig createconfig
+  ypconfig createconfig [--cfg=configfile]
 
 Options:
   -h --help             Show this help
@@ -11,7 +11,7 @@ Options:
 """
 
 import sys, os
-sys.path.insert(0, '/home/mark/src/ypconfig/lib')
+sys.path.insert(0, os.path.join(os.getcwd(), 'lib'))
 
 from ypconfig import Config, Netlink
 from docopt import docopt
@@ -49,4 +49,5 @@ if __name__ == '__main__':
             print("Configuration is ok!")
     elif args['createconfig']:
         cfg = Netlink.GetNow()
-        pprint(Config.Validate(cfg))
+        cfg = Config.Validate(cfg)
+        Config.Set(args['--cfg'], cfg)
