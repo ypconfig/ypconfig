@@ -26,7 +26,7 @@ An array of interfaces, where each interface has the following options:
   - vlan
   - loopback
 - For bond interfaces, set the following options:
-  - mode, the bond-mode you want to use. See (this documentation)[https://www.kernel.org/doc/Documentation/networking/bonding.txt] for more information.
+  - bond-mode, the bond-mode you want to use. See (this documentation)[https://www.kernel.org/doc/Documentation/networking/bonding.txt] for more information.
     - balance-rr
     - active-backup
     - balance-xor
@@ -37,7 +37,7 @@ An array of interfaces, where each interface has the following options:
   - miimon:
     The MII link monitoring frequency in milliseconds, defaults to ```100```
   - lacp_rate:
-    Only valid if mode is ```802.3ad```. Can be ```slow``` or ```fast```.
+    Only valid if mode is ```802.3ad```. Can be ```slow``` or ```fast```, defaults to ```slow```.
 
 
 
