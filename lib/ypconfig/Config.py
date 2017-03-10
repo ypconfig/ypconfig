@@ -19,6 +19,18 @@ def Get(cfg):
 
     return document
 
+def Set(cfg, configdict):
+    try:
+        f = open(cfg, 'w')
+    except Exception as e:
+        raise e
+
+    try:
+        document = dump(configdict, default_flow_style=False)
+        f.write(document)
+    except Exception as e:
+        raise e
+
 def Validate(document):
     def ipv4(teststring):
         regex = re.compile('^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)/([1-9]|[12][0-9]|3[0-2])$')
@@ -56,7 +68,7 @@ def Validate(document):
             raise ValueError("Adminstate must be UP or DOWN, not %s" % (state))
 
     def Mtu(mtu):
-        if 65536 >= mtu > 1280:
+        if 65536 >= mtu > 128:
             return mtu
         else:
             raise ValueError("Invalid value for MTU")
@@ -66,6 +78,33 @@ def Validate(document):
             return vlanid
         else:
             raise ValueError("Invalid value for vlanid")
+
+    def MiiMon(miimon):
+        if 10000 >= miimon >= 0:
+            return miimon
+        else:
+            raise ValueError("Invalid value for miimon")
+
+    def BondMode(bmode):
+        modes = ['balance-rr','active-backup','balance-xor','broadcast','802.3ad','balance-tlb','balance-alb']
+
+        try:
+            if type(int()) == type(bmode):
+                bmode = modes[bmode]
+        except:
+            raise ValueError("Invalid value for bond-mode")
+
+        if bmode in modes:
+
+            return bmode
+        else:
+            raise ValueError("Invalid value for bond-mode")
+
+    def LacpRate(rate):
+        if rate.lower() in ['slow', 'fast']:
+            return rate.lower()
+        else:
+            raise ValueError("Invalid value for lacp_rate")
 
     def Interface(iface, iname):
         ret = {}
@@ -138,11 +177,36 @@ def Validate(document):
         except KeyError:
             pass
 
+        if ret['type'] == 'bond':
+            try:
+                ret['bond_mode'] = BondMode(iface['bond_mode'])
+            except ValueError as e:
+                raise e
+            except KeyError:
+                ret['bond_mode'] = 'balance-rr'
+
+            try:
+                if iface['miimon']:
+                    ret['miimon'] = MiiMon(iface['miimon'])
+            except ValueError as e:
+                raise
+            except KeyError:
+                ret['miimon'] = 100
+
+            if ret['bond_mode'] == '802.3ad':
+                try:
+                    ret['lacp_rate'] = LacpRate(iface['lacp_rate'])
+                except ValueError as e:
+                    raise e
+                except KeyError:
+                    ret['lacp_rate'] = 'slow'
         return ret
 
     # First, check if any weird values occur
     olddoc = deepcopy(document)
     for iface in olddoc.keys():
+        if not document[iface]:
+            raise ValueError("Empty interface configuration for %s" % (iface))
         document[iface] = Interface(document[iface], iface)
 
     # Then, check if interfaces used in bonds are actually unconfigured

@@ -8,11 +8,18 @@ def GetNow():
     ret = {}
 
     for iface in ip.get_links():
-        this = {}
-        this['type'] = 'default'
+        iname = iface.get_attr('IFLA_IFNAME')
+        try:
+            this = ret[iname]
+        except KeyError:
+            this = {}
+            this['type'] = 'default'
+
         this['name'] = iface.get_attr('IFLA_IFNAME')
+
         if this['name'] == 'lo':
             this['type'] = 'loopback'
+
         addrs = []
         for addr in ip.get_addr(index=iface['index']):
             if addr.get_attr('IFA_ADDRESS').startswith('fe80:'):
@@ -65,7 +72,10 @@ def GetNow():
                     this['type'] = 'slave'
                     ret[this['name']] = this
                 elif linfo.get_attr('IFLA_INFO_KIND') == 'bond':
+                    bonddata = linfo.get_attr('IFLA_INFO_DATA')
                     this['type'] = 'bond'
+                    this['miimon'] = bonddata.get_attr('IFLA_BOND_MIIMON')
+                    this['bond_mode'] = bonddata.get_attr('IFLA_BOND_MODE')
                     ret[this['name']] = this
             except Exception as e:
                 print(e)
