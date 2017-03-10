@@ -18,6 +18,27 @@ An array of interfaces, where each interface has the following options:
   Or a single float-value where this value is the ratelimit in bit/s, or a ```in``` value and/or ```out``` value, to differentiate between incoming and outgoing ratelimits. Optionally a unit can be added (KMG).
 - slaves:
   An array with interfaces you want to bond into this interface.
+- Optional type:
+  The type of the interface:
+  - default
+  - bond
+  - slave
+  - vlan
+  - loopback
+- For bond interfaces, set the following options:
+  - mode, the bond-mode you want to use. See (this documentation)[https://www.kernel.org/doc/Documentation/networking/bonding.txt] for more information.
+    - balance-rr
+    - active-backup
+    - balance-xor
+    - broadcast
+    - 802.3ad
+    - balance-tlb
+    - balance-alb
+  - miimon:
+    The MII link monitoring frequency in milliseconds, defaults to ```100```
+  - lacp_rate:
+    Only valid if mode is ```802.3ad```. Can be ```slow``` or ```fast```.
+
 
 
 EXAMPLE 1
