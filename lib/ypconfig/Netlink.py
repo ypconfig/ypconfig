@@ -85,13 +85,13 @@ def GetNow():
 
     return ret
 
-def AddIface(ipdb, iface):
+# def AddIface(ipdb, iface):
 
-def DelIface(ipdb, iface):
+# def DelIface(ipdb, iface):
 
-def UpIface(ipdb, iface):
+# def UpIface(ipdb, iface):
 
-def DownIface(ipdb, iface):
+# def DownIface(ipdb, iface):
 
-def Commit(ipdb):
-    ipdb.commit()
+# def Commit(ipdb):
+#     ipdb.commit()
