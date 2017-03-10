@@ -11,6 +11,8 @@ def GetNow():
         this = {}
         this['type'] = 'default'
         this['name'] = iface.get_attr('IFLA_IFNAME')
+        if this['name'] == 'lo':
+            this['type'] = 'loopback'
         addrs = []
         for addr in ip.get_addr(index=iface['index']):
             if addr.get_attr('IFA_ADDRESS').startswith('fe80:'):
@@ -45,6 +47,26 @@ def GetNow():
                     this['type'] = 'vlan'
                     this['vlanid'] = linfo.get_attr('IFLA_INFO_DATA').get_attr('IFLA_VLAN_ID')
                     ret[pname]['vlans'].append(this)
+                elif linfo.get_attr('IFLA_INFO_SLAVE_KIND') == 'bond':
+                    # Get the parents name
+                    #print(ip.get_links(iface.get_attr('IFLA_MASTER')))
+                    pname = ip.get_links(iface.get_attr('IFLA_MASTER'))[0].get_attr('IFLA_IFNAME')
+                    try:
+                        ret[pname]
+                    except KeyError:
+                        ret[pname] = {}
+
+                    try:
+                        ret[pname]['slaves']
+                    except KeyError:
+                        ret[pname]['slaves'] = []
+
+                    ret[pname]['slaves'].append(this['name'])
+                    this['type'] = 'slave'
+                    ret[this['name']] = this
+                elif linfo.get_attr('IFLA_INFO_KIND') == 'bond':
+                    this['type'] = 'bond'
+                    ret[this['name']] = this
             except Exception as e:
                 print(e)
                 pass
