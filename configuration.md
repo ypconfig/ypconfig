@@ -9,11 +9,6 @@ An array of interfaces, where each interface has the following options:
   The state of the interface, may be ```UP``` or ```DOWN```, defaults to ```UP```
 - mtu:
   The MTU of the interface, defaults to ```1500```
-- vlans:
-  An array of dictionaries like interfaces, but with the following exceptions:
-  - We do not (yet) support Q-in-Q, so ```vlans``` is not accepted
-  - The value ```vlanid``` is an integer for the vlan id.
-  - The value ```name``` is the name of the interface, defaults to ```parent.vlanid```
 - ratelimit:
   Or a single float-value where this value is the ratelimit in bit/s, or a ```in``` value and/or ```out``` value, to differentiate between incoming and outgoing ratelimits. Optionally a unit can be added (KMG).
 - slaves:
@@ -25,6 +20,9 @@ An array of interfaces, where each interface has the following options:
   - slave
   - vlan
   - loopback
+- For vlan interfaces, set the following options:
+  - The value ```vlanid``` is an integer for the vlan id.
+  - The value ```parent``` is the name of the parent interface
 - For bond interfaces, set the following options:
   - bond-mode, the bond-mode you want to use. See (this documentation)[https://www.kernel.org/doc/Documentation/networking/bonding.txt] for more information.
     - balance-rr
@@ -66,14 +64,14 @@ A vlan interface on eth0
     eth0:
       adminstate: UP
       mtu: 1500
-      vlans:
-      - adminstate: UP
-        addresses:
-        - 192.168.1.4/24
-        - fd00::192:168:1:4/64
-        mtu: 1500
-        name: foobar
-        vlanid: 200
+    foobar:
+      adminstate: UP
+      addresses:
+      - 192.168.1.4/24
+      - fd00::192:168:1:4/64
+      mtu: 1500
+      vlanid: 200
+      parent: eth0
     lo:
       addresses:
       - 127.0.0.1/8
