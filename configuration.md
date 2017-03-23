@@ -10,7 +10,7 @@ An array of interfaces, where each interface has the following options:
 - mtu:
   The MTU of the interface, defaults to ```1500```
 - ratelimit:
-  Or a single float-value where this value is the ratelimit in bit/s, or a ```in``` value and/or ```out``` value, to differentiate between incoming and outgoing ratelimits. Optionally a unit can be added (KMG).
+  Or a single float-value where this value is the ratelimit in bit/s, or a ```in``` value and/or ```out``` value, to differentiate between incoming and outgoing ratelimits. Optionally a unit can be added (KMG). [NOT YET IMPLEMENTED]
 - slaves:
   An array with interfaces you want to bond into this interface.
 - Optional type:
