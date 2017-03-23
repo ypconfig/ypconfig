@@ -4,7 +4,7 @@ PKGPREFIX=$(PREFIX)/$(PKGNAME)
 SDIR=ypconfig
 
 install:
-	python setup.py install --force --root=$(PKGPREFIX) --no-compile -O0 --install-layout=deb
+	python3 setup.py install --force --root=$(PKGPREFIX) --no-compile -O0 --install-layout=deb
 	mkdir -p $(PKGPREFIX)/etc/ypconfig/
 	mkdir -p $(PKGPREFIX)/usr/sbin/
 	mkdir -p $(PKGPREFIX)/usr/lib/ypconfig/
