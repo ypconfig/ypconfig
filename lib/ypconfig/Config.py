@@ -62,14 +62,14 @@ def Validate(document):
         if type(int()) == type(state):
             state = list(['DOWN', 'UP'])[state]
 
-        if state.upper() in ['UP', 'DOWN', 'UNKNOWN']:
+        if state.upper() in ['UP', 'DOWN', 'UNKNOWN', 'LOWERLAYERDOWN']:
             return state.upper()
         else:
             raise ValueError("Adminstate must be UP or DOWN, not %s" % (state))
 
     def Mtu(mtu):
-        if 65536 >= mtu > 128:
-            return mtu
+        if 65536 >= int(mtu) > 128:
+            return int(mtu)
         else:
             raise ValueError("Invalid value for MTU")
 
@@ -95,8 +95,7 @@ def Validate(document):
             raise ValueError("Invalid value for bond-mode")
 
         if bmode in modes:
-
-            return bmode
+            return modes.index(bmode)
         else:
             raise ValueError("Invalid value for bond-mode")
 
@@ -115,12 +114,21 @@ def Validate(document):
             ret['type'] = 'default'
 
         try:
+            ret['description'] = iface['description']
+        except KeyError:
+            ret['description'] = ret['name']
+
+        try:
+            if iface['addresses']:
+                if type(iface['addresses']) != list:
+                    raise ValueError("Addresses should be an array")
             for address in iface['addresses']:
                 try:
                     ret['addresses']
                 except KeyError:
                     ret['addresses'] = []
                 ret['addresses'].append(IP(address))
+            ret['addresses'].sort()
         except ValueError as e:
             raise e
         except (KeyError, TypeError):
@@ -139,32 +147,14 @@ def Validate(document):
             raise e
         except KeyError:
             if iname == 'lo':
-                ret['mtu'] = 65536
+                ret['mtu'] = Mtu(65536)
             else:
-                ret['mtu'] = '1500'
+                ret['mtu'] = Mtu(1500)
 
         try:
             ret['vlanid'] = VlanId(iface['vlanid'])
-        except ValueError as e:
-            raise e
-        except KeyError:
-            pass
-
-        try:
-            if iface['vlans']:
-                vlans = []
-                for vlan in iface['vlans']:
-                    vname = ''
-                    try:
-                        vname = vlan['name']
-                    except KeyError:
-                        vname = "%s.%s" % (iname, vlan['vlanid'])
-                    vlan['type'] = 'vlan'
-                    vlan = Interface(vlan, vname)
-                    if int(vlan['mtu']) > int(ret['mtu']):
-                        ret['mtu'] = vlan['mtu']
-                    vlans.append(vlan)
-                ret['vlans'] = vlans
+            ret['type'] = 'vlan'
+            ret['parent'] = iface['parent']
         except ValueError as e:
             raise e
         except KeyError:
@@ -173,17 +163,21 @@ def Validate(document):
         try:
             if iface['slaves']:
                 ret['type'] = 'bond'
+                if type(iface['slaves']) != list:
+                    raise ValueError("Slaves should be an array")
                 ret['slaves'] = iface['slaves']
+        except ValueError as e:
+            raise e
         except KeyError:
             pass
 
         if ret['type'] == 'bond':
             try:
-                ret['bond_mode'] = BondMode(iface['bond_mode'])
+                ret['bond_mode'] = BondMode(iface['bond-mode'])
             except ValueError as e:
                 raise e
             except KeyError:
-                ret['bond_mode'] = 'balance-rr'
+                ret['bond_mode'] = 0
 
             try:
                 if iface['miimon']:
@@ -215,8 +209,12 @@ def Validate(document):
         if document[iface]['type'] == 'bond':
             for s in document[iface]['slaves']:
                 try:
-                    if document[s]['vlans']:
-                        raise ValueError("Interface %s is used as a slave and has vlans configured" % (s))
+                    for t in document.keys():
+                        try:
+                            if document[t]['parent'] == s:
+                                raise ValueError("Interface %s is used as a slave and has vlans configured" % (s))
+                        except KeyError:
+                            pass
                 except ValueError as e:
                     raise e
                 except KeyError:
@@ -236,7 +234,6 @@ def Validate(document):
                     document[s] = {}
 
                 document[s]['mtu'] = document[iface]['mtu']
-                document[s]['adminstate'] = 'UP'
                 document[s]['name'] = s
                 document[s]['type'] = 'slave'
 
