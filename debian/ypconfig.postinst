@@ -19,7 +19,15 @@ set -e
 case "$1" in
     configure)
         # Install required pip packages
+        echo "Installing all pip dependencies"
         pip3 install -r /etc/ypconfig/requirements.txt
+
+        if [ -z $2 ]; then
+            if [ ! -r /etc/ypconfig/ypconfig.yml ]; then
+                echo "Creating an initial config file"
+                /usr/sbin/ypconfig createconfig
+            fi
+        fi
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
