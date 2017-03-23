@@ -2,27 +2,42 @@
 # -*- coding: utf-8 -*-
 
 """Usage:
-  ypconfig configtest [--cfg=configfile]
-  ypconfig createconfig [--cfg=configfile]
+  ypconfig configtest [options]
+  ypconfig createconfig [options]
+  ypconfig commit [--confirm] [options]
 
 Options:
-  -h --help             Show this help
+  -h, --help            Show this help
+  -v, --verbose         Be more verbose
+  --confirm             Do not ask for confirmation [default: False]
   --cfg=<configfile>    Location of the configfile [default: /etc/ypconfig/ypconfig.yml]
 """
 
-import sys, os
+import sys, os, select
 sys.path.insert(0, os.path.join(os.getcwd(), 'lib'))
 
 from ypconfig import Config, Netlink
 from docopt import docopt
 from schema import Schema, And, Or, Use, SchemaError, Optional
 from pprint import pprint
+from pyroute2 import IPRoute
+from time import time
+
+def rollback(cfg):
+    cur = Config.Validate(Netlink.GetNow())
+    new = Config.Get(cfg)
+    Netlink.Commit(cur, new)
+    print("Rolled back to %s" % (cfg))
 
 if __name__ == '__main__':
     args = docopt(__doc__)
 
     schema = Schema({
+        '--help': bool,
+        '--verbose': bool,
         '--cfg': str,
+        '--confirm': bool,
+        'commit': bool,
         'configtest': bool,
         'createconfig': bool
     })
@@ -51,3 +66,26 @@ if __name__ == '__main__':
         cfg = Netlink.GetNow()
         cfg = Config.Validate(cfg)
         Config.Set(args['--cfg'], cfg)
+    elif args['commit']:
+        cur = Config.Validate(Netlink.GetNow())
+        cfgfile = '_'.join(['ypconfig', 'backup', str(time())])
+        rollbackcfg = os.path.join('/tmp', cfgfile)
+        Config.Set(rollbackcfg, cur)
+        new = Config.Validate(cfgdoc)
+        try:
+            Netlink.Commit(cur, new)
+        except Exception as e:
+            print("We had an error confirming this new configuration:")
+            print("%s" % (e))
+            print("\n\n")
+            print("Rolling back")
+            rollback(rollbackcfg)
+
+        if not args['--confirm']:
+            print("New configuration commited. Type 'confirm' to confirm, we will rollback in 60 seconds otherwise.")
+            i, o, e = select.select( [sys.stdin], [], [], 60 )
+
+            if i and sys.stdin.readline().strip() == 'confirm':
+                sys.exit(0)
+            else:
+                rollback(rollbackcfg)
