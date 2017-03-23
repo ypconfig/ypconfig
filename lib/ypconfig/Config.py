@@ -106,7 +106,7 @@ def Validate(document):
             raise ValueError("Invalid value for lacp_rate")
 
     def Interface(iface, iname):
-        known_fields = [ 'description', 'name', 'addresses', 'adminstate', 'mtu', 'ratelimit', 'slaves', 'type', 'vlanid', 'parent', 'bond-mode', 'miimon', 'lacp_rate' ]
+        known_fields = [ 'vaddresses', 'description', 'name', 'addresses', 'adminstate', 'mtu', 'ratelimit', 'slaves', 'type', 'vlanid', 'parent', 'bond-mode', 'miimon', 'lacp_rate' ]
         for f in iface.keys():
             if f not in known_fields:
                 raise ValueError("Invalid field in config for interface %s: %s" % (iname, f))
@@ -122,6 +122,22 @@ def Validate(document):
             ret['description'] = iface['description']
         except KeyError:
             ret['description'] = ret['name']
+
+        try:
+            if iface['vaddresses']:
+                if type(iface['vaddresses']) != list:
+                    raise ValueError("vaddresses should be an array")
+            for address in iface['vaddresses']:
+                try:
+                    ret['vaddresses']
+                except KeyError:
+                    ret['vaddresses'] = []
+                ret['vaddresses'].append(IP(address))
+            ret['vaddresses'].sort()
+        except ValueError as e:
+            raise e
+        except (KeyError, TypeError):
+            pass
 
         try:
             if iface['addresses']:

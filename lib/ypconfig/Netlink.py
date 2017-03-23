@@ -123,6 +123,17 @@ def Commit(cur, new):
                     else:
                         c[v] = None
 
+                if v == 'addresses':
+                    vaddresses = []
+                    try:
+                        vaddresses += n['vaddresses']
+                    except KeyError:
+                        pass
+                    try:
+                        vaddresses += c['vaddresses']
+                    except KeyError:
+                        pass
+
                 try:
                     if n[v] != c[v]:
                         if v == 'adminstate':
@@ -132,10 +143,13 @@ def Commit(cur, new):
                         elif v == 'description':
                             Ifalias(iface, n[v])
                         elif v == 'addresses':
+
                             for addr in set(n[v]).difference(set(c[v])):
-                                Addaddr(iface, addr)
+                                if addr not in vaddresses:
+                                    Addaddr(iface, addr)
                             for addr in set(c[v]).difference(set(n[v])):
-                                Deladdr(iface, addr)
+                                if addr not in vaddresses:
+                                    Deladdr(iface, addr)
                         elif v == 'slaves':
                             for slave in set(n[v]).difference(set(c[v])):
                                 Addslave(iface, slave)

@@ -5,6 +5,8 @@ An array of interfaces, where each interface has the following options:
   A description we can read via snmpd
 - addresses:
   An array of addresses in the syntax address/prefixlen
+- vaddresses:
+  An optional array of addresses that can be assigned on this interface, e.g. via VRRP. ypconfig will not add or remove these addresses
 - adminstate:
   The state of the interface, may be ```UP``` or ```DOWN```, defaults to ```UP```
 - mtu:
