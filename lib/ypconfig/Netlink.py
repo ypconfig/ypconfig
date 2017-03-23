@@ -177,15 +177,17 @@ def Delif(iface):
 def Addvlan(vals):
     print("Creating vlan interface %s on %s with id %s" % (vals['name'], vals['parent'], vals['vlanid']))
     global ip
+    iface = vals['name']
     parent = ip.interfaces[vals['parent']]
     parent.up()
-    i = ip.create(kind='vlan', ifname=vals['name'], link=parent, vlan_id=vals['vlanid'], reuse=True)
-    Ifstate(vals['name'], vals['adminstate'])
-    Ifmtu(vals['name'], vals['mtu'])
+    i = ip.create(kind='vlan', ifname=iface, link=parent, vlan_id=vals['vlanid'], reuse=True)
+    Ifstate(iface, vals['adminstate'])
+    Ifmtu(iface, vals['mtu'])
+    Ifalias(iface, vals['description'])
     try:
         vals['addresses']
         for addr in vals['addresses']:
-            Addaddr(vals['name'], addr)
+            Addaddr(iface, addr)
     except KeyError:
         pass
     except Exception as e:
@@ -202,6 +204,7 @@ def Addbond(vals):
         Addslave(iface, child)
     Ifmtu(iface, vals['mtu'])
     Ifstate(iface, vals['adminstate'])
+    Ifalias(iface, vals['description'])
     try:
         vals['addresses']
         for addr in vals['addresses']:
