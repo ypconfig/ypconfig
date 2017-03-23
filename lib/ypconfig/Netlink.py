@@ -2,8 +2,6 @@
 
 from pyroute2 import IPRoute
 from pyroute2 import IPDB
-from pprint import pprint
-from dictdiffer import diff
 
 def GetNow():
     ip = IPRoute()
