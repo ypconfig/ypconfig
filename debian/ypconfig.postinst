@@ -19,7 +19,7 @@ set -e
 case "$1" in
     configure)
         # Install required pip packages
-        pip3 -r /etc/ypconfig/requirements.txt
+        pip3 install -r /etc/ypconfig/requirements.txt
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)

@@ -1,4 +1,4 @@
-PREFIX=$(CURDIR)/debian/
+PREFIX=$(CURDIR)/debian
 
 install: ypconfig
 
