@@ -67,6 +67,14 @@ def Validate(document):
         else:
             raise ValueError("Adminstate must be UP or DOWN, not %s" % (state))
 
+    def Ifname(teststring):
+        regex = re.compile('^[-_a-z0-9]{2,15}$')
+
+        if regex.match(teststring):
+            return teststring
+        else:
+            raise ValueError("Invalid interfacename: %s" % (teststring))
+
     def Mtu(mtu):
         if 65536 >= int(mtu) > 128:
             return int(mtu)
@@ -112,7 +120,7 @@ def Validate(document):
                 raise ValueError("Invalid field in config for interface %s: %s" % (iname, f))
 
         ret = {}
-        ret['name'] = iname
+        ret['name'] = Ifname(iname)
         if iname == 'lo':
             ret['type'] = 'loopback'
         else:
