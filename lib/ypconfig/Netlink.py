@@ -243,7 +243,12 @@ def Addaddr(iface, addr):
 def Ifstate(iface, state):
     print("Setting state of interface %s to %s" % (iface, state))
     global ip
+    from pprint import pprint
     i = ip.interfaces[iface]
+    if i['kind'] == 'vlan':
+        p = ip.interfaces[i['link']]
+        if p['operstate'] == 'DOWN' and state == 'UP':
+            return
     if state == 'UP':
         i.up()
     if state == 'DOWN':
