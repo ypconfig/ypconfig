@@ -28,6 +28,7 @@ def rollback(cfg):
     new = Config.Get(cfg)
     Netlink.Commit(cur, new)
     print("Rolled back to %s" % (cfg))
+    sys.exit(1)
 
 if __name__ == '__main__':
     args = docopt(__doc__)
