@@ -71,21 +71,27 @@ if __name__ == '__main__':
         cfgfile = '_'.join(['ypconfig', 'backup', str(time())])
         rollbackcfg = os.path.join('/tmp', cfgfile)
         Config.Set(rollbackcfg, cur)
-        new = Config.Validate(cfgdoc)
+        try:
+            new = Config.Validate(cfgdoc)
+        except ValueError as e:
+            print("Errors in configuration:\n - %s" % (e))
+            sys.exit(1)
+
         try:
             Netlink.Commit(cur, new)
         except Exception as e:
-            print("We had an error confirming this new configuration:")
-            print("%s" % (e))
-            print("\n\n")
+            print("We had an error confirming this new configuration:\n - '%s" % (e))
             print("Rolling back")
             rollback(rollbackcfg)
 
         if not args['--confirm']:
             print("New configuration commited. Type 'confirm' to confirm, we will rollback in 60 seconds otherwise.")
-            i, o, e = select.select( [sys.stdin], [], [], 60 )
+            try:
+                i, o, e = select.select( [sys.stdin], [], [], 60 )
 
-            if i and sys.stdin.readline().strip() == 'confirm':
-                sys.exit(0)
-            else:
+                if i and sys.stdin.readline().strip() == 'confirm':
+                    sys.exit(0)
+                else:
+                    rollback(rollbackcfg)
+            except KeyboardInterrupt:
                 rollback(rollbackcfg)
