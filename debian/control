@@ -1,0 +1,12 @@
+Source: ypconfig
+Section: misc
+Priority: extra
+Maintainer: Mark Schouten <mark@tuxis.nl>
+Build-Depends: debhelper (>= 5), python3
+Standards-Version: 3.9.1
+
+Package: ypconfig
+Architecture: all
+Pre-Depends: python-support python3-pip
+Description: ypconfig, talk to Netlink from Python
+ ypconfig is able to configure your servers network interfaces from a Yaml file, and rollback if something goes wrong.
