@@ -106,6 +106,11 @@ def Validate(document):
             raise ValueError("Invalid value for lacp_rate")
 
     def Interface(iface, iname):
+        known_fields = [ 'description', 'name', 'addresses', 'adminstate', 'mtu', 'ratelimit', 'slaves', 'type', 'vlanid', 'parent', 'bond-mode', 'miimon', 'lacp_rate' ]
+        for f in iface.keys():
+            if f not in known_fields:
+                raise ValueError("Invalid field in config for interface %s: %s" % (iname, f))
+
         ret = {}
         ret['name'] = iname
         if iname == 'lo':
