@@ -262,7 +262,7 @@ def Ifmtu(iface, mtu):
     print("Setting MTU of interface %s to %s" % (iface, mtu))
     global ip
     i = ip.interfaces[iface]
-    i['mtu'] = int(mtu)
+    i.mtu = int(mtu)
     ip.commit()
 
 def Ifalias(iface, alias):
@@ -270,4 +270,8 @@ def Ifalias(iface, alias):
     global ip
     i = ip.interfaces[iface]
     i['ifalias'] = alias
-    ip.commit()
+    # XXX We do not want this. But untill https://github.com/svinota/pyroute2/issues/349 is fixed, we need it.
+    try:
+        ip.commit()
+    except:
+        pass
