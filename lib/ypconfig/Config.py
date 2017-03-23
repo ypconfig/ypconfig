@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from yaml import load, dump
+from yaml import safe_load, dump, YAMLError
 from sys import exit
 from copy import deepcopy
 import re, socket
@@ -13,7 +13,12 @@ def Get(cfg):
         raise e
 
     try:
-        document = load(f.read())
+        document = safe_load(f.read())
+    except YAMLError as exc:
+        if hasattr(exc, 'problem_mark'):
+            mark = exc.problem_mark
+            raise ValueError("YAML Error in configuration; Error on line %s, position %s)" \
+                % (mark.line+1, mark.column+1))
     except:
         raise ValueError("YAML Error in configuration")
 
