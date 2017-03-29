@@ -1,3 +1,9 @@
+ypconfig (0.2) unstable; urgency=low
+
+  - Somewhat stable, and better.
+
+ -- Mark Schouten <mark@tuxis.nl>  Wed, 29 Mar 2017 17:09:25 +0200
+
 ypconfig (0.1) unstable; urgency=low
 
   - Initial version.
