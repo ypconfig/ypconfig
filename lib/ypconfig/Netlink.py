@@ -85,16 +85,19 @@ def Commit(cur, new):
     curif = set(cur.keys())
     newif = set(new.keys())
 
+    changed = False
     with IPDB(mode='implicit') as ip:
         curif = set(cur.keys())
         newif = set(new.keys())
 
         # These interfaces should be deleted
         for iface in curif.difference(newif):
+            changed = True
             Delif(iface)
 
         # These interfaces need to be created
         for iface in newif.difference(curif):
+            changed = True
             if new[iface]['type'] == 'vlan':
                 Addvlan(new[iface])
             elif new[iface]['type'] == 'bond':
@@ -134,6 +137,7 @@ def Commit(cur, new):
 
                 try:
                     if n[v] != c[v]:
+                        changed = True
                         if v == 'adminstate':
                             Ifstate(iface, n[v])
                         elif v == 'mtu':
@@ -166,6 +170,8 @@ def Commit(cur, new):
                     raise e
         ip.commit()
         ip.release()
+
+        return changed
 
 def Delif(iface):
     print("Removing interface %s" % (iface))

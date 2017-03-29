@@ -78,12 +78,17 @@ if __name__ == '__main__':
             print("Errors in configuration:\n - %s" % (e))
             sys.exit(1)
 
+        changed = False
         try:
-            Netlink.Commit(cur, new)
+            changed = Netlink.Commit(cur, new)
         except Exception as e:
             print("We had an error confirming this new configuration:\n - '%s" % (e))
             print("Rolling back")
             rollback(rollbackcfg)
+
+        if not changed:
+            print("Nothing changed")
+            sys.exit(0)
 
         if not args['--confirm']:
             print("New configuration commited. Type 'confirm' to confirm, we will rollback in 60 seconds otherwise.")
