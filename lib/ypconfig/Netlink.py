@@ -187,7 +187,10 @@ def Addvlan(vals):
     parent = ip.interfaces[vals['parent']]
     parent.up()
     i = ip.create(kind='vlan', ifname=iface, link=parent, vlan_id=vals['vlanid'], reuse=True)
+    ip.commit()
+
     Ifstate(iface, vals['adminstate'])
+
     Ifmtu(iface, vals['mtu'])
     Ifalias(iface, vals['description'])
     try:
@@ -260,6 +263,7 @@ def Ifstate(iface, state):
             return
     if state == 'UP':
         i.up()
+        i.wait_ip('fe80::', mask=64, timeout=5)
     if state == 'DOWN':
         i.down()
     ip.commit()
