@@ -137,7 +137,8 @@ def Commit(cur, new):
 
                 try:
                     if n[v] != c[v]:
-                        changed = True
+                        if v != 'addresses':
+                            changed = True
                         if v == 'adminstate':
                             Ifstate(iface, n[v])
                         elif v == 'mtu':
@@ -145,12 +146,13 @@ def Commit(cur, new):
                         elif v == 'description':
                             Ifalias(iface, n[v])
                         elif v == 'addresses':
-
                             for addr in set(n[v]).difference(set(c[v])):
                                 if addr not in vaddresses:
+                                    changed = True
                                     Addaddr(iface, addr)
                             for addr in set(c[v]).difference(set(n[v])):
                                 if addr not in vaddresses:
+                                    changed = True
                                     Deladdr(iface, addr)
                         elif v == 'slaves':
                             for slave in set(n[v]).difference(set(c[v])):
@@ -184,8 +186,10 @@ def Addvlan(vals):
     print("Creating vlan interface %s on %s with id %s" % (vals['name'], vals['parent'], vals['vlanid']))
     global ip
     iface = vals['name']
+    Ifstate(vals['parent'], 'UP')
+
     parent = ip.interfaces[vals['parent']]
-    parent.up()
+
     i = ip.create(kind='vlan', ifname=iface, link=parent, vlan_id=vals['vlanid'], reuse=True)
     ip.commit()
 
@@ -263,29 +267,32 @@ def Ifstate(iface, state):
             return
     if state == 'UP':
         i.up()
+        ip.commit()
         i.wait_ip('fe80::', mask=64, timeout=5)
     if state == 'DOWN':
         i.down()
-    ip.commit()
+        ip.commit()
 
 def Ifmtu(iface, mtu):
     print("Setting MTU of interface %s to %s" % (iface, mtu))
     global ip
     i = ip.interfaces[iface]
-    i['mtu'] = int(mtu)
-    # XXX We do not want this. But untill https://github.com/svinota/pyroute2/issues/349 is fixed, we need it.
-    try:
-        ip.commit()
-    except:
-        pass
+    if int(i['mtu']) != int(mtu):
+        i['mtu'] = int(mtu)
+        # XXX We do not want this. But untill https://github.com/svinota/pyroute2/issues/349 is fixed, we need it.
+        try:
+            ip.commit()
+        except:
+            pass
 
 def Ifalias(iface, alias):
     print("Setting alias of interface %s to %s" % (iface, alias))
     global ip
     i = ip.interfaces[iface]
-    i['ifalias'] = alias
-    # XXX We do not want this. But untill https://github.com/svinota/pyroute2/issues/349 is fixed, we need it.
-    try:
-        ip.commit()
-    except:
-        pass
+    if str(i['ifalias']) != str(alias):
+        i['ifalias'] = alias
+        # XXX We do not want this. But untill https://github.com/svinota/pyroute2/issues/349 is fixed, we need it.
+        try:
+            ip.commit()
+        except:
+            pass

@@ -1,0 +1,17 @@
+[Unit]
+Description=Do ypconfig commit
+DefaultDependencies=no
+Wants=network.target
+After=local-fs.target network-pre.target apparmor.service systemd-sysctl.service systemd-modules-load.service
+Before=networking.service ifup@.service
+Conflicts=shutdown.target
+
+[Install]
+WantedBy=multi-user.target
+WantedBy=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/ypconfig commit --confirm
+RemainAfterExit=true
+TimeoutStartSec=5min
