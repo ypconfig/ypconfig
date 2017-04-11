@@ -1,0 +1,9 @@
+deploy:
+  script:
+    - dpkg-buildpackage
+    - mkdir -p $CI_PROJECT_DIR/../nfs
+    - sudo mount -t nfs -o vers=3 debmirror.tuxis.net:/home/debmirror $CI_PROJECT_DIR/../nfs
+    - sudo mv $CI_PROJECT_DIR/../ypconfig*.deb $CI_PROJECT_DIR/../nfs/htdocs/tuxis/ypconfig/
+    - touch $CI_PROJECT_DIR/../nfs/tmp/rebuildPackages
+    - sudo umount $CI_PROJECT_DIR/../nfs
+
