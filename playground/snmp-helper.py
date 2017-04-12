@@ -48,7 +48,6 @@ def snmp_print(iface):
 if cmd == '-g':
     for l in links:
         if int(l['index']) == int(oididx):
-            print(l)
             snmp_print(l)
 elif cmd == '-n':
     lidx = 0
