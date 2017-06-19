@@ -33,7 +33,7 @@ setup(
     description='Tools required for ypconfig',
     author='Mark Schouten',
     author_email='mark@tuxis.nl',
-    url='https://github.com/tuxis-ie/ypconfig',
+    url='https://github.com/ypconfig/ypconfig',
     classifiers=[
         'Intended Audience :: Developers',
         'Topic :: Software Development :: Libraries :: Python Modules',
