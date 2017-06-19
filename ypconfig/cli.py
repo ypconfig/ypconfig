@@ -16,7 +16,7 @@ Options:
 import sys, os, select
 sys.path.insert(0, os.path.join(os.getcwd(), 'lib'))
 
-from ypconfig import Config, Netlink
+from ypconfig import config, netlink
 from docopt import docopt
 from schema import Schema, And, Or, Use, SchemaError, Optional
 from pprint import pprint
@@ -24,9 +24,9 @@ from pyroute2 import IPRoute
 from time import time
 
 def rollback(cfg):
-    cur = Config.Validate(Netlink.GetNow())
-    new = Config.Get(cfg)
-    Netlink.Commit(cur, new)
+    cur = config.Validate(netlink.GetNow())
+    new = config.Get(cfg)
+    netlink.Commit(cur, new)
     print("Rolled back to %s" % (cfg))
     sys.exit(1)
 
@@ -50,37 +50,37 @@ if __name__ == '__main__':
 
     if not args['createconfig']:
         try:
-            cfgdoc = Config.Get(args['--cfg'])
+            cfgdoc = config.Get(args['--cfg'])
         except FileNotFoundError as e:
             print(e)
             sys.exit(1)
 
     if args['configtest']:
         try:
-            cfg = Config.Validate(cfgdoc)
+            cfg = config.Validate(cfgdoc)
         except Exception as e:
             print("Errors in configuration:\n - %s" % (e))
             sys.exit(1)
         else:
             print("Configuration is ok!")
     elif args['createconfig']:
-        cfg = Netlink.GetNow()
-        cfg = Config.Validate(cfg)
-        Config.Set(args['--cfg'], cfg)
+        cfg = netlink.GetNow()
+        cfg = config.Validate(cfg)
+        config.Set(args['--cfg'], cfg)
     elif args['commit']:
-        cur = Config.Validate(Netlink.GetNow())
+        cur = config.Validate(netlink.GetNow())
         cfgfile = '_'.join(['ypconfig', 'backup', str(time())])
         rollbackcfg = os.path.join('/tmp', cfgfile)
-        Config.Set(rollbackcfg, cur)
+        config.Set(rollbackcfg, cur)
         try:
-            new = Config.Validate(cfgdoc)
+            new = config.Validate(cfgdoc)
         except ValueError as e:
             print("Errors in configuration:\n - %s" % (e))
             sys.exit(1)
 
         changed = False
         try:
-            changed = Netlink.Commit(cur, new)
+            changed = netlink.Commit(cur, new)
         except Exception as e:
             print("We had an error confirming this new configuration:\n - '%s" % (e))
             print("Rolling back")
