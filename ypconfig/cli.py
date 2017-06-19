@@ -30,7 +30,7 @@ def rollback(cfg):
     print("Rolled back to %s" % (cfg))
     sys.exit(1)
 
-if __name__ == '__main__':
+def main():
     args = docopt(__doc__)
 
     schema = Schema({
@@ -101,3 +101,6 @@ if __name__ == '__main__':
                     rollback(rollbackcfg)
             except KeyboardInterrupt:
                 rollback(rollbackcfg)
+
+if __name__ == "__main__":
+    main()
