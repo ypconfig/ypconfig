@@ -2,6 +2,7 @@
 import os
 import sys
 
+from pip.req import parse_requirements
 from setuptools import setup, find_packages
 from ypconfig import __version__
 
@@ -23,6 +24,9 @@ elif major == 3:
         print("Python 3.X support requires the 2to3 tool.")
         sys.exit(1)
 
+install_reqs = parse_requirements('requirements.txt', session="")
+reqs = [str(ir.req) for ir in install_reqs]
+
 setup(
     name='ypconfig',
     version=__version__,
@@ -31,6 +35,8 @@ setup(
     author_email='mark@tuxis.nl',
     url='https://github.com/tuxis-ie/ypconfig',
     license='BSD 2-Clause',
+    setup_requires=reqs,
+    install_requires=reqs,
     packages=find_packages(exclude=['tests', 'tests.*']),
     platforms=['linux'],
     data_files=[
