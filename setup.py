@@ -30,6 +30,13 @@ setup(
     author='Mark Schouten',
     author_email='mark@tuxis.nl',
     url='https://github.com/tuxis-ie/ypconfig',
+    classifiers=[
+        'Intended Audience :: Developers',
+        'Topic :: Software Development :: Libraries :: Python Modules',
+        'Topic :: System :: Networking',
+        'License :: OSI Approved :: BSD License',
+        'Programming Language :: Python :: 3.5',
+    ],
     license='BSD 2-Clause',
     packages=find_packages(exclude=['tests', 'tests.*']),
     platforms=['linux'],
