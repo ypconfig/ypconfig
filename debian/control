@@ -8,7 +8,7 @@ X-Python-Version: >= 3
 
 Package: ypconfig
 Architecture: all
-Depends: ${misc:Depends}, ${python3:Depends}, python-pkg-resources
+Depends: ${misc:Depends}, ${python3:Depends}, python3-pkg-resources
 Pre-Depends: python3-pip
 Description: ypconfig, talk to Netlink from Python
  ypconfig is able to configure your servers network interfaces from a Yaml file, and rollback if something goes wrong.
