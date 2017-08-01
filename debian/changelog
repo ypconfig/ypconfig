@@ -1,3 +1,10 @@
+ypconfig (1.0.1) stable; urgency=high
+
+  - Python installs the script in /usr/bin, we want in /usr/sbin for Debian at
+    least. This fixes the Debian pkg
+
+ -- Mark Schouten <mark@tuxis.nl>  Tue, 01 Aug 2017 17:15:25 +0200
+
 ypconfig (1.0.0) stable; urgency=low
 
   - There was a typo in the debian/control file
