@@ -1,3 +1,10 @@
+ypconfig (1.0.0) stable; urgency=low
+
+  - There was a typo in the debian/control file
+  - The versionnumbers between Debian and PIP were different
+
+ -- Mark Schouten <mark@tuxis.nl>  Tue, 01 Aug 2017 16:26:25 +0200
+
 ypconfig (0.2) unstable; urgency=low
 
   - Somewhat stable, and better.
