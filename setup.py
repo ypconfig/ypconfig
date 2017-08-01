@@ -24,8 +24,7 @@ elif major == 3:
         print("Python 3.X support requires the 2to3 tool.")
         sys.exit(1)
 
-install_reqs = parse_requirements('requirements.txt', session="")
-reqs = [str(ir.req) for ir in install_reqs]
+reqs = ['schema', 'pyroute2', 'PyYAML', 'docopt']
 
 setup(
     name='ypconfig',
@@ -45,7 +44,6 @@ setup(
     setup_requires=reqs,
     install_requires=reqs,
     packages=find_packages(exclude=['tests', 'tests.*']),
-    package_data={'': ['README.md', 'LICENSE', 'requirements.txt']},
     platforms=['linux'],
     data_files=[
     ],
