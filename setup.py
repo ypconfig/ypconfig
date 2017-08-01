@@ -45,6 +45,7 @@ setup(
     setup_requires=reqs,
     install_requires=reqs,
     packages=find_packages(exclude=['tests', 'tests.*']),
+    package_data={'': ['README.md', 'LICENSE', 'requirements.txt']},
     platforms=['linux'],
     data_files=[
     ],
