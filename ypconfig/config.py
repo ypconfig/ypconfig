@@ -207,11 +207,11 @@ def Validate(document):
 
         if ret['type'] == 'bond':
             try:
-                ret['bond_mode'] = BondMode(iface['bond-mode'])
+                ret['bond-mode'] = BondMode(iface['bond-mode'])
             except ValueError as e:
                 raise e
             except KeyError:
-                ret['bond_mode'] = 0
+                ret['bond-mode'] = 0
 
             try:
                 if iface['miimon']:
@@ -221,7 +221,7 @@ def Validate(document):
             except KeyError:
                 ret['miimon'] = 100
 
-            if ret['bond_mode'] == '802.3ad':
+            if ret['bond-mode'] == '802.3ad':
                 try:
                     ret['lacp_rate'] = LacpRate(iface['lacp_rate'])
                 except ValueError as e:

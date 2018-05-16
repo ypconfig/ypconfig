@@ -70,7 +70,7 @@ def GetNow():
                     bonddata = linfo.get_attr('IFLA_INFO_DATA')
                     this['type'] = 'bond'
                     this['miimon'] = bonddata.get_attr('IFLA_BOND_MIIMON')
-                    this['bond_mode'] = bonddata.get_attr('IFLA_BOND_MODE')
+                    this['bond-mode'] = bonddata.get_attr('IFLA_BOND_MODE')
                     ret[this['name']] = this
             except Exception as e:
                 print(e)
@@ -211,7 +211,7 @@ def Addbond(vals):
     print("Creating bond interface %s with %s" % (vals['name'], str(vals)))
     global ip
     iface = vals['name']
-    i = ip.create(kind='bond', ifname=iface, bond_mode=vals['bond_mode'], bond_miimon=vals['miimon'], reuse=True)
+    i = ip.create(kind='bond', ifname=iface, bond_mode=vals['bond-mode'], bond_miimon=vals['miimon'], reuse=True)
     for child in vals['slaves']:
         Ifmtu(child, vals['mtu'])
         Addslave(iface, child)
