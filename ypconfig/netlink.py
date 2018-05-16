@@ -96,12 +96,20 @@ def Commit(cur, new):
             Delif(iface)
 
         # These interfaces need to be created
+        toadd = list()
         for iface in newif.difference(curif):
             changed = True
-            if new[iface]['type'] == 'vlan':
-                Addvlan(new[iface])
-            elif new[iface]['type'] == 'bond':
+            if new[iface]['type'] == 'bond':
+                toadd.insert(0, iface)
+            elif new[iface]['type'] == 'vlan':
+                toadd.append(iface)
+
+        for iface in toadd:
+            changed = True
+            if new[iface]['type'] == 'bond':
                 Addbond(new[iface])
+            elif new[iface]['type'] == 'vlan':
+                Addvlan(new[iface])
 
         # Processes changes in remaining interfaces
         for iface in newif.intersection(curif):
@@ -213,6 +221,7 @@ def Addbond(vals):
     iface = vals['name']
     i = ip.create(kind='bond', ifname=iface, bond_mode=vals['bond-mode'], bond_miimon=vals['miimon'], reuse=True)
     for child in vals['slaves']:
+        Ifstate(child, 'DOWN')
         Ifmtu(child, vals['mtu'])
         Addslave(iface, child)
     Ifmtu(iface, vals['mtu'])
