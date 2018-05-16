@@ -166,7 +166,7 @@ def Commit(cur, new):
                             for slave in set(n[v]).difference(set(c[v])):
                                 Addslave(iface, slave)
                             for slave in set(c[v]).difference(set(n[v])):
-                                Removeslave(iface, slave)
+                                Delslave(iface, slave)
                         elif v in ['vlanid', 'parent']:
                             Delif(iface)
                             Addvlan(new[iface])
@@ -221,7 +221,6 @@ def Addbond(vals):
     iface = vals['name']
     i = ip.create(kind='bond', ifname=iface, bond_mode=vals['bond-mode'], bond_miimon=vals['miimon'], reuse=True)
     for child in vals['slaves']:
-        Ifstate(child, 'DOWN')
         Ifmtu(child, vals['mtu'])
         Addslave(iface, child)
     Ifmtu(iface, vals['mtu'])
@@ -240,6 +239,7 @@ def Addbond(vals):
 def Addslave(iface, slave):
     print("Adding interface %s as slave on %s" % (slave, iface))
     global ip
+    Ifstate(slave, 'DOWN')
     i = ip.interfaces[iface]
     i.add_port(ip.interfaces[slave])
     ip.commit()
@@ -248,7 +248,7 @@ def Delslave(iface, slave):
     print("Removing interface %s as slave from %s" % (slave, iface))
     global ip
     i = ip.interfaces[iface]
-    i.del_port(ip.interfaces[slave])
+    i.del_port(slave)
     ip.commit()
 
 def Deladdr(iface, addr):
@@ -268,7 +268,6 @@ def Addaddr(iface, addr):
 def Ifstate(iface, state):
     print("Setting state of interface %s to %s" % (iface, state))
     global ip
-    from pprint import pprint
     i = ip.interfaces[iface]
     if i['kind'] == 'vlan':
         p = ip.interfaces[i['link']]
