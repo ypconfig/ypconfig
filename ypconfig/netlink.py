@@ -2,10 +2,31 @@
 
 from pyroute2 import IPRoute
 from pyroute2 import IPDB
+from socket import AF_INET, AF_INET6
+
 
 def GetNow():
     ip = IPRoute()
     ret = {}
+
+    for route in ip.get_routes() + ip.get_routes(family=AF_INET6):
+        if route.get_attr('RTA_GATEWAY'):
+            try:
+                ret['routes']
+            except KeyError:
+                ret['routes'] = dict()
+
+            if not route.get_attr('RTA_DST'):
+                dst = 'default'
+            else:
+                dst = '/'.join([str(route.get_attr('RTA_DST')), str(route['dst_len'])])
+
+            try:
+                ret['routes'][dst]
+            except KeyError:
+                ret['routes'][dst] = list()
+
+            ret['routes'][dst].append(route.get_attr('RTA_GATEWAY'))
 
     for iface in ip.get_links():
         iname = iface.get_attr('IFLA_IFNAME')

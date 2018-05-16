@@ -63,6 +63,12 @@ def Validate(document):
         else:
             return ipv4(ip)
 
+    def SingleIP(ip):
+        if ':' in ip:
+            return ipv6('%s/128' % (ip))
+        else:
+            return ipv4('%s/32' % (ip))
+
     def Adminstate(state):
         if type(int()) == type(state):
             state = list(['DOWN', 'UP'])[state]
@@ -230,16 +236,41 @@ def Validate(document):
                     ret['lacp_rate'] = 'slow'
         return ret
 
+    def Route(gateways, destination):
+        # Test the destination, which should be a network or 'default'
+
+        if destination != 'default':
+            try:
+                IP(destination)
+            except ValueError as e:
+                raise e
+
+        # Now, test all gateways
+        for gw in gateways:
+            try:
+                SingleIP(gw)
+            except ValueError as e:
+                raise e
+
+        return gateways
+
     # First, check if any weird values occur
     olddoc = deepcopy(document)
     for iface in olddoc.keys():
-        if not document[iface]:
-            raise ValueError("Empty interface configuration for %s" % (iface))
-        document[iface] = Interface(document[iface], iface)
+        if iface == 'routes':
+            for route in document[iface]:
+                document[iface][route] = Route(document[iface][route], route)
+        else:
+            if not document[iface]:
+                raise ValueError("Empty interface configuration for %s" % (iface))
+            document[iface] = Interface(document[iface], iface)
 
     # Then, check if interfaces used in bonds are actually unconfigured
     olddoc = deepcopy(document)
     for iface in olddoc.keys():
+        if iface == 'routes':
+            continue
+
         if document[iface]['type'] == 'bond':
             for s in document[iface]['slaves']:
                 try:
