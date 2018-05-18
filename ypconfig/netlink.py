@@ -109,16 +109,21 @@ def Commit(cur, new):
 
     try:
         curroutes = cur['routes']
-        newroutes = new['routes']
         crouteset = set(cur['routes'].keys())
+    except KeyError:
+        crouteset = set()
+        print("No routes configured, skipping routeconfiguration")
+
+    try:
+        newroutes = new['routes']
         nrouteset = set(new['routes'].keys())
     except KeyError:
         skiproutes = True
         print("No routes configured, skipping routeconfiguration")
 
     try:
-        del(cur['routes'])
         del(new['routes'])
+        del(cur['routes'])
     except:
         pass
 
