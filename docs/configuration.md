@@ -1,4 +1,4 @@
-ypconfig reads a yaml-file (defaults to /etc/ypconfig/interfaces.yml) and tries to configure the system accordingly. The configfile has the following syntax:
+ypconfig reads a yaml-file (defaults to /etc/ypconfig/ypconfig.yml) and tries to configure the system accordingly. The configfile has the following syntax:
 
 An array of interfaces, where each interface has the following options:
 - description:
