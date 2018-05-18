@@ -39,7 +39,20 @@ An array of interfaces, where each interface has the following options:
   - lacp_rate:
     Only valid if mode is ```802.3ad```. Can be ```slow``` or ```fast```, defaults to ```slow```.
 
+ROUTES
+======
+There is a special 'interface' called ```routes```. If the configfile does not have a ```routes```, routes remain ***untouched***. If you do want ypconfig to handle routes, here's how:
 
+    routes:
+      default:
+      - 192.168.1.1
+      - fd00::192:168:1:1
+      9.9.9.9/32:
+      - 192.168.2.1
+      2620:fe::fe/128:
+      - fd00::192:168:2:1
+
+Although the routes use an array for nexthop, only one nexthop is currently supported.
 
 EXAMPLE 1
 =========
