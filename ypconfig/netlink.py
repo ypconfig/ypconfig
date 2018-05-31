@@ -123,6 +123,10 @@ def Commit(cur, new):
 
     try:
         del(new['routes'])
+    except:
+        pass
+
+    try:
         del(cur['routes'])
     except:
         pass
