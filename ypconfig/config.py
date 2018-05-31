@@ -45,8 +45,8 @@ def Validate(document):
         else:
             raise ValueError("This is not a valid IPv4 address: %s" % (teststring))
 
-    def ipv6(teststring):
-        if teststring.startswith('fe80:'):
+    def ipv6(teststring, allowlinklocal=False):
+        if not allowlinklocal and teststring.startswith('fe80:'):
             raise ValueError("Do not configure link-local addresses")
 
         try:
@@ -63,9 +63,9 @@ def Validate(document):
         else:
             return ipv4(ip)
 
-    def SingleIP(ip):
+    def SingleIP(ip, allowlinklocal=False):
         if ':' in ip:
-            return ipv6('%s/128' % (ip))
+            return ipv6('%s/128' % (ip), allowlinklocal)
         else:
             return ipv4('%s/32' % (ip))
 
@@ -248,7 +248,7 @@ def Validate(document):
         # Now, test all gateways
         for gw in gateways:
             try:
-                SingleIP(gw)
+                SingleIP(gw, allowlinklocal=True)
             except ValueError as e:
                 raise e
 
