@@ -257,6 +257,7 @@ def AddRoute(route, gws):
     global ip
     for d in gws:
         ip.routes.add(dst=route, gateway=d)
+        ip.commit()
 
 def DelRoute(route):
     print("Removing route for %s" % (route))
