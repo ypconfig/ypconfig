@@ -112,7 +112,6 @@ def Commit(cur, new):
         crouteset = set(cur['routes'].keys())
     except KeyError:
         crouteset = set()
-        print("No routes configured, skipping routeconfiguration")
 
     try:
         newroutes = new['routes']
