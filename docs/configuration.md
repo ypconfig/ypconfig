@@ -47,9 +47,9 @@ There is a special 'interface' called ```routes```. If the configfile does not h
       default:
       - 192.168.1.1
       - fd00::192:168:1:1
-      9.9.9.9/32:
+      172.16.0.0/24:
       - 192.168.2.1
-      2620:fe::fe/128:
+      fd08::172:16:0:0/64
       - fd00::192:168:2:1
 
 Although the routes use an array for nexthop, only one nexthop is currently supported.
