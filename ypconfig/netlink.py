@@ -2,10 +2,31 @@
 
 from pyroute2 import IPRoute
 from pyroute2 import IPDB
+from socket import AF_INET, AF_INET6
+
 
 def GetNow():
     ip = IPRoute()
     ret = {}
+
+    for route in ip.get_routes() + ip.get_routes(family=AF_INET6):
+        if route.get_attr('RTA_GATEWAY'):
+            try:
+                ret['routes']
+            except KeyError:
+                ret['routes'] = dict()
+
+            if not route.get_attr('RTA_DST'):
+                dst = 'default'
+            else:
+                dst = '/'.join([str(route.get_attr('RTA_DST')), str(route['dst_len'])])
+
+            try:
+                ret['routes'][dst]
+            except KeyError:
+                ret['routes'][dst] = list()
+
+            ret['routes'][dst].append(route.get_attr('RTA_GATEWAY'))
 
     for iface in ip.get_links():
         iname = iface.get_attr('IFLA_IFNAME')
@@ -82,10 +103,36 @@ def GetNow():
 
 def Commit(cur, new):
     global ip
+
+    skiproutes = False
+    changed = False
+
+    try:
+        curroutes = cur['routes']
+        crouteset = set(cur['routes'].keys())
+    except KeyError:
+        crouteset = set()
+
+    try:
+        newroutes = new['routes']
+        nrouteset = set(new['routes'].keys())
+    except KeyError:
+        skiproutes = True
+        print("No routes configured, skipping routeconfiguration")
+
+    try:
+        del(new['routes'])
+    except:
+        pass
+
+    try:
+        del(cur['routes'])
+    except:
+        pass
+
     curif = set(cur.keys())
     newif = set(new.keys())
 
-    changed = False
     with IPDB(mode='implicit') as ip:
         curif = set(cur.keys())
         newif = set(new.keys())
@@ -178,10 +225,95 @@ def Commit(cur, new):
                     pass
                 except Exception as e:
                     raise e
+
+        if not skiproutes:
+            try:
+                # These routes should be deleted
+                for route in crouteset.difference(nrouteset):
+                    changed = True
+                    DelRoute(route)
+
+                # These routes should be created
+                for route in nrouteset.difference(crouteset):
+                    changed = True
+                    AddRoute(route, newroutes[route])
+
+                # These routes should be checked
+                for route in nrouteset.intersection(crouteset):
+                    if curroutes[route] != newroutes[route]:
+                        changed = True
+                        ChangeRoute(route, newroutes[route])
+
+            except Exception as e:
+                raise e
+
         ip.commit()
         ip.release()
 
         return changed
+
+def AddRoute(route, gws):
+    print("Adding route for %s/%s" % (route, gws))
+    global ip
+    for d in gws:
+        ip.routes.add(dst=route, gateway=d)
+        ip.commit()
+
+def DelRoute(route):
+    print("Removing route for %s" % (route))
+    global ip
+    ip.routes.remove(route)
+
+def DefaultRoute(gws):
+    global ip
+    v6new = [ d for d in gws if ':' in d ]
+    v4new = [ d for d in gws if '.' in d ]
+    v6cur = list()
+    v4cur = list()
+    for r in ip.routes:
+        if r['dst_len'] != 0:
+            continue
+        if r['family'] == 10:
+            v6cur.append(r['gateway'])
+        elif r['family'] == 2:
+            v4cur.append(r['gateway'])
+
+    if len(v6new) > len(v6cur):
+        AddRoute('default', v6new)
+
+    if len(v4new) > len(v4cur):
+        AddRoute('default', v4new)
+
+    for r in ip.routes:
+        if r['dst_len'] != 0:
+            continue
+        if r['family'] == 10:
+            if len(v6new) == 0:
+                r.remove()
+            elif len(v6new) == len(v6cur):
+                if v6new[0] == v6cur[0]:
+                    continue
+                r.remove()
+                ip.commit()
+                AddRoute('default', v6new)
+        elif r['family'] == 2:
+            if len(v4new) == 0:
+                r.remove()
+            elif len(v4new) == len(v4cur):
+                if v4new[0] == v4cur[0]:
+                    continue
+                r.remove()
+                ip.commit()
+                AddRoute('default', v4new)
+
+def ChangeRoute(route, gws):
+    print("Changing route for %s" % (route))
+    global ip
+    if route == 'default':
+        return DefaultRoute(gws)
+
+    for d in gws:
+        ip.routes[route].gateway = d
 
 def Delif(iface):
     print("Removing interface %s" % (iface))

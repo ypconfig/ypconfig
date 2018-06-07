@@ -1,4 +1,4 @@
-ypconfig reads a yaml-file (defaults to /etc/ypconfig/interfaces.yml) and tries to configure the system accordingly. The configfile has the following syntax:
+ypconfig reads a yaml-file (defaults to /etc/ypconfig/ypconfig.yml) and tries to configure the system accordingly. The configfile has the following syntax:
 
 An array of interfaces, where each interface has the following options:
 - description:
@@ -39,7 +39,20 @@ An array of interfaces, where each interface has the following options:
   - lacp_rate:
     Only valid if mode is ```802.3ad```. Can be ```slow``` or ```fast```, defaults to ```slow```.
 
+ROUTES
+======
+There is a special 'interface' called ```routes```. If the configfile does not have a ```routes```, routes remain ***untouched***. If you do want ypconfig to handle routes, here's how:
 
+    routes:
+      default:
+      - 192.168.1.1
+      - fd00::192:168:1:1
+      172.16.0.0/24:
+      - 192.168.2.1
+      fd08::172:16:0:0/64
+      - fd00::192:168:2:1
+
+Although the routes use an array for nexthop, only one nexthop is currently supported.
 
 EXAMPLE 1
 =========
