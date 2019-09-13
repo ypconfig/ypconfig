@@ -1,3 +1,10 @@
+ypconfig (1.0.2) stable; urgency=high
+
+  - Bump PyYAML dependency >= 4.2b1 for CVE-217-18342
+  - Add python3-pip Build-Dep
+
+ -- Sander Smeenk <sander@bit.nl>  Fri, 13 Sep 2019 11:22:33 +0200
+
 ypconfig (1.0.1) stable; urgency=high
 
   - Python installs the script in /usr/bin, we want in /usr/sbin for Debian at
