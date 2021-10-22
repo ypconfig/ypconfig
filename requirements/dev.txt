@@ -1,0 +1,2 @@
+pre-commit==2.9.2
+isort==5.6.4

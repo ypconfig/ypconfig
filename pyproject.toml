@@ -1,0 +1,5 @@
+[tool.isort]
+profile = "black"
+line_length = 79
+known_first_party = ["ypconfig"]
+default_section = "THIRDPARTY"

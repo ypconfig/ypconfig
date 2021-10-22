@@ -9,7 +9,7 @@ install:
 	mkdir -p $(PKGPREFIX)/usr/sbin/
 	mkdir -p $(PKGPREFIX)/usr/lib/ypconfig/
 	install -m 755 playground/snmp-helper.py $(PKGPREFIX)/usr/lib/ypconfig
-	install -m 644 requirements.txt $(PKGPREFIX)/etc/ypconfig/
+	install -m 644 requirements/base.txt $(PKGPREFIX)/etc/ypconfig/
 
 clean:
 	rm -rf $(PREFIX)/ypconfig
