@@ -46,7 +46,7 @@ ypconfig reads a YAML file (defaults to `/etc/ypconfig/ypconfig.yml`) and tries 
   - lacp_rate:
     Only valid if mode is `802.3ad`. Can be `slow` or `fast`. Default: `slow`.
 
-# Routes
+## Routes
 
 There is a special 'interface' called `routes`. If the config file does not have a `routes` interface, ypconfig will not touch routes. If you do want ypconfig to handle routes, here's how:
 
@@ -62,6 +62,14 @@ routes:
 ```
 
 Although the routes use an array for nexthop, only one nexthop is currently supported.
+
+# Usage
+
+When installing ypconfig, a config file will be created for you in `/etc/ypconfig/ypconfig.yml`. This config file will contain your currently configured interfaces. Note that this config file will not be generated when a file with the same name already exists.
+
+ypconfig ships with a systemd unit, `ypconfig.service`. This one-shot service takes care of configuring your interfaces (as specified in the config file) on boot.
+
+You can commit at any time by running `ypconfig commit`. This will rollback if it doesn't receive your confirmation within 60 seconds. This behaviour can be overridden by running with the `--confirm` flag, but you should probably not do that as it will not rollback when you may need it to. Note that running `--confirm` with a faulty config file will not commit.
 
 # Examples
 
@@ -146,6 +154,10 @@ bond0:
   - eth0
   - eth1
 ```
+
+# NetBox
+
+You can dynamically generate your ypconfig config file from [NetBox](https://github.com/netbox-community/netbox) using `netbox2ypconfig`, which can be found on [PyPI](https://pypi.org/project/netbox2ypconfig/).
 
 # Credits
 
