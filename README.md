@@ -69,11 +69,13 @@ Although the routes use an array for nexthop, only one nexthop is currently supp
 
 # Usage
 
-When installing ypconfig, a config file will be created for you in `/etc/ypconfig/ypconfig.yml`. This config file will contain your currently configured interfaces. Note that this config file will not be generated when a file with the same name already exists.
+When installing ypconfig, a config file will be created for you in `/etc/ypconfig/ypconfig.yml`. This config file will contain your currently configured interfaces. Note that this config file will not be generated when a file with the same name already exists. You can generate a config file at any time using `ypconfig createconfig`.
 
 ypconfig ships with a systemd unit, `ypconfig.service`. This one-shot service takes care of configuring your interfaces (as specified in the config file) on boot.
 
-You can commit at any time by running `ypconfig commit`. This will rollback if it doesn't receive your confirmation within 60 seconds. This behaviour can be overridden by running with the `--confirm` flag, but you should probably not do that as it will not rollback when you may need it to. Note that running `--confirm` with a faulty config file will not commit.
+You can commit at any time by running `ypconfig commit`. This will rollback if it doesn't receive your confirmation within 60 seconds. This behaviour can be overridden by running with the `--confirm` flag, but you should probably not do that as it will not rollback when you may need it to. Note that running `--confirm` with a faulty config file will not commit. You can check your config file using `ypconfig configtest`.
+
+All `ypconfig` commands take the argument `--cfg`, which allows you to use a custom config file.
 
 # Examples
 
