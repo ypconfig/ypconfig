@@ -221,7 +221,7 @@ def Commit(cur, new):
                             Delif(iface)
                             Addbond(new[iface])
                 except KeyError as e:
-                    print("%s on %s" % (e, iface))
+                    print(f"{e} on {iface}")
                     pass
                 except Exception as e:
                     raise e
@@ -253,14 +253,14 @@ def Commit(cur, new):
         return changed
 
 def AddRoute(route, gws):
-    print("Adding route for %s/%s" % (route, gws))
+    print(f"Adding route for {route}/{gws}")
     global ip
     for d in gws:
         ip.routes.add(dst=route, gateway=d)
         ip.commit()
 
 def DelRoute(route):
-    print("Removing route for %s" % (route))
+    print(f"Removing route for {route}")
     global ip
     ip.routes.remove(route)
 
@@ -307,7 +307,7 @@ def DefaultRoute(gws):
                 AddRoute('default', v4new)
 
 def ChangeRoute(route, gws):
-    print("Changing route for %s" % (route))
+    print(f"Changing route for {route}")
     global ip
     if route == 'default':
         return DefaultRoute(gws)
@@ -316,14 +316,14 @@ def ChangeRoute(route, gws):
         ip.routes[route].gateway = d
 
 def Delif(iface):
-    print("Removing interface %s" % (iface))
+    print(f"Removing interface {iface}")
     global ip
     i = ip.interfaces[iface]
     i.remove()
     ip.commit()
 
 def Addvlan(vals):
-    print("Creating vlan interface %s on %s with id %s" % (vals['name'], vals['parent'], vals['vlanid']))
+    print(f"Creating vlan interface {vals['name']} on {vals['parent']} with id {vals['vlanid']}")
     global ip
     iface = vals['name']
     Ifstate(vals['parent'], 'UP')
@@ -348,7 +348,7 @@ def Addvlan(vals):
     ip.commit()
 
 def Addbond(vals):
-    print("Creating bond interface %s with %s" % (vals['name'], str(vals)))
+    print(f"Creating bond interface {vals['name']} with {str(vals)}")
     global ip
     iface = vals['name']
     i = ip.create(kind='bond', ifname=iface, bond_mode=vals['bond-mode'], bond_miimon=vals['miimon'], reuse=True)
@@ -369,7 +369,7 @@ def Addbond(vals):
     ip.commit()
 
 def Addslave(iface, slave):
-    print("Adding interface %s as slave on %s" % (slave, iface))
+    print(f"Adding interface {slave} as slave on {iface}")
     global ip
     Ifstate(slave, 'DOWN')
     i = ip.interfaces[iface]
@@ -377,28 +377,28 @@ def Addslave(iface, slave):
     ip.commit()
 
 def Delslave(iface, slave):
-    print("Removing interface %s as slave from %s" % (slave, iface))
+    print(f"Removing interface {slave} as slave from {iface}")
     global ip
     i = ip.interfaces[iface]
     i.del_port(slave)
     ip.commit()
 
 def Deladdr(iface, addr):
-    print("Removing IP %s from %s" % (addr, iface))
+    print(f"Removing IP {addr} from {iface}")
     global ip
     i = ip.interfaces[iface]
     i.del_ip(addr)
     ip.commit()
 
 def Addaddr(iface, addr):
-    print("Adding IP %s to %s" % (addr, iface))
+    print(f"Adding IP {addr} to {iface}")
     global ip
     i = ip.interfaces[iface]
     i.add_ip(addr)
     ip.commit()
 
 def Ifstate(iface, state):
-    print("Setting state of interface %s to %s" % (iface, state))
+    print(f"Setting state of interface {iface} to {state}")
     global ip
     i = ip.interfaces[iface]
     if i['kind'] == 'vlan':
@@ -414,7 +414,7 @@ def Ifstate(iface, state):
         ip.commit()
 
 def Ifmtu(iface, mtu):
-    print("Setting MTU of interface %s to %s" % (iface, mtu))
+    print(f"Setting MTU of interface {iface} to {mtu}")
     global ip
     i = ip.interfaces[iface]
     if int(i['mtu']) != int(mtu):
@@ -426,7 +426,7 @@ def Ifmtu(iface, mtu):
             pass
 
 def Ifalias(iface, alias):
-    print("Setting alias of interface %s to %s" % (iface, alias))
+    print(f"Setting alias of interface {iface} to {alias}")
     global ip
     i = ip.interfaces[iface]
     if str(i['ifalias']) != str(alias):

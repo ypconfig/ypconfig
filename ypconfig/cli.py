@@ -27,7 +27,7 @@ def rollback(cfg):
     cur = config.Validate(netlink.GetNow())
     new = config.Get(cfg)
     netlink.Commit(cur, new)
-    print("Rolled back to %s" % (cfg))
+    print(f"Rolled back to {cfg}")
     sys.exit(1)
 
 def main():
@@ -59,7 +59,7 @@ def main():
         try:
             cfg = config.Validate(cfgdoc)
         except Exception as e:
-            print("Errors in configuration:\n - %s" % (e))
+            print(f"Errors in configuration:\n - {e}")
             sys.exit(1)
         else:
             print("Configuration is ok!")
@@ -75,14 +75,14 @@ def main():
         try:
             new = config.Validate(cfgdoc)
         except ValueError as e:
-            print("Errors in configuration:\n - %s" % (e))
+            print(f"Errors in configuration:\n - {e}")
             sys.exit(1)
 
         changed = False
         try:
             changed = netlink.Commit(cur, new)
         except Exception as e:
-            print("We had an error confirming this new configuration:\n - '%s" % (e))
+            print(f"We had an error confirming this new configuration:\n - '{e}")
             print("Rolling back")
             rollback(rollbackcfg)
 

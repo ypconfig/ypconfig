@@ -43,7 +43,7 @@ def Validate(document):
         if regex.match(teststring):
             return teststring
         else:
-            raise ValueError("This is not a valid IPv4 address: %s" % (teststring))
+            raise ValueError(f"This is not a valid IPv4 address: {teststring}")
 
     def ipv6(teststring, allowlinklocal=False):
         if not allowlinklocal and teststring.startswith('fe80:'):
@@ -55,7 +55,7 @@ def Validate(document):
                 if 128 >= int(teststring.split('/')[1]) > 0:
                     return teststring.lower()
         except:
-            raise ValueError("This is not a valid IPv6 address: %s" % (teststring))
+            raise ValueError(f"This is not a valid IPv6 address: {teststring}")
 
     def IP(ip):
         if ':' in ip:
@@ -65,9 +65,9 @@ def Validate(document):
 
     def SingleIP(ip, allowlinklocal=False):
         if ':' in ip:
-            return ipv6('%s/128' % (ip), allowlinklocal)
+            return ipv6(f'{ip}/128', allowlinklocal)
         else:
-            return ipv4('%s/32' % (ip))
+            return ipv4(f'{ip}/32')
 
     def Adminstate(state):
         if type(int()) == type(state):
@@ -76,7 +76,7 @@ def Validate(document):
         if state.upper() in ['UP', 'DOWN', 'UNKNOWN', 'LOWERLAYERDOWN']:
             return state.upper()
         else:
-            raise ValueError("Adminstate must be UP or DOWN, not %s" % (state))
+            raise ValueError(f"Adminstate must be UP or DOWN, not {state}")
 
     def Ifname(teststring):
         regex = re.compile('^[-_a-z0-9]{2,15}$')
@@ -84,7 +84,7 @@ def Validate(document):
         if regex.match(teststring):
             return teststring
         else:
-            raise ValueError("Invalid interfacename: %s" % (teststring))
+            raise ValueError(f"Invalid interfacename: {teststring}")
 
     def Mtu(mtu):
         if 65536 >= int(mtu) > 128:
@@ -128,7 +128,7 @@ def Validate(document):
         known_fields = [ 'vaddresses', 'description', 'name', 'addresses', 'adminstate', 'mtu', 'ratelimit', 'slaves', 'type', 'vlanid', 'parent', 'bond-mode', 'miimon', 'lacp_rate', 'autoconfigure' ]
         for f in iface.keys():
             if f not in known_fields:
-                raise ValueError("Invalid field in config for interface %s: %s" % (iname, f))
+                raise ValueError(f"Invalid field in config for interface {iname}: {f}")
 
         ret = {}
         ret['name'] = Ifname(iname)
@@ -262,7 +262,7 @@ def Validate(document):
                 document[iface][route] = Route(document[iface][route], route)
         else:
             if not document[iface]:
-                raise ValueError("Empty interface configuration for %s" % (iface))
+                raise ValueError(f"Empty interface configuration for {iface}")
             document[iface] = Interface(document[iface], iface)
 
     # Then, check if interfaces used in bonds are actually unconfigured
@@ -277,7 +277,7 @@ def Validate(document):
                     for t in document.keys():
                         try:
                             if document[t]['parent'] == s:
-                                raise ValueError("Interface %s is used as a slave and has vlans configured" % (s))
+                                raise ValueError(f"Interface {s} is used as a slave and has vlans configured")
                         except KeyError:
                             pass
                 except ValueError as e:
@@ -287,7 +287,7 @@ def Validate(document):
 
                 try:
                     if document[s]['addresses']:
-                        raise ValueError("Interface %s is used as a slave and has addresses configured" % (s))
+                        raise ValueError(f"Interface {s} is used as a slave and has addresses configured")
                 except ValueError as e:
                     raise e
                 except KeyError:
