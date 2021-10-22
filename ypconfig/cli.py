@@ -19,12 +19,10 @@ import sys
 
 sys.path.insert(0, os.path.join(os.getcwd(), 'lib'))
 
-from pprint import pprint
 from time import time
 
 from docopt import docopt
-from pyroute2 import IPRoute
-from schema import And, Optional, Or, Schema, SchemaError, Use
+from schema import Schema, SchemaError
 
 from ypconfig import config, netlink
 

@@ -3,7 +3,6 @@
 import re
 import socket
 from copy import deepcopy
-from sys import exit
 
 from yaml import YAMLError, dump, safe_load
 
