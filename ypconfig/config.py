@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 
-from yaml import safe_load, dump, YAMLError
-from sys import exit
+import re
+import socket
 from copy import deepcopy
-import re, socket
+from sys import exit
+
+from yaml import YAMLError, dump, safe_load
 
 
 def Get(cfg):

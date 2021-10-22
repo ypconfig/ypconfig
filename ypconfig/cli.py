@@ -13,15 +13,21 @@ Options:
   --cfg=<configfile>    Location of the configfile [default: /etc/ypconfig/ypconfig.yml]
 """
 
-import sys, os, select
+import os
+import select
+import sys
+
 sys.path.insert(0, os.path.join(os.getcwd(), 'lib'))
 
-from ypconfig import config, netlink
-from docopt import docopt
-from schema import Schema, And, Or, Use, SchemaError, Optional
 from pprint import pprint
-from pyroute2 import IPRoute
 from time import time
+
+from docopt import docopt
+from pyroute2 import IPRoute
+from schema import And, Optional, Or, Schema, SchemaError, Use
+
+from ypconfig import config, netlink
+
 
 def rollback(cfg):
     cur = config.Validate(netlink.GetNow())
