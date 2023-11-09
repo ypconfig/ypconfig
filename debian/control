@@ -1,9 +1,9 @@
 Source: ypconfig
 Section: misc
-Priority: extra
+Priority: optional
 Maintainer: Mark Schouten <mark@tuxis.nl>
-Build-Depends: debhelper (>= 8.0.0), dh-python, python3-all, python3-setuptools, python3-pip, dh-systemd
-Standards-Version: 3.9.1
+Build-Depends: debhelper (>= 10), dh-python, python3-all, python3-setuptools, python3-pip, dh-systemd
+Standards-Version: 4.3.0
 X-Python-Version: >= 3
 
 Package: ypconfig
