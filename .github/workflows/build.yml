@@ -1,0 +1,38 @@
+name: Build Debian package
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Update apt cache
+        run: sudo apt-get update
+
+      - name: Install required packages to build
+        run: sudo apt-get -y install build-essential devscripts equivs dh-python
+
+      - name: Install build dependencies
+        run: sudo mk-build-deps -i -t 'apt -o Debug::pkgProblemResolver=yes --no-install-recommends -y'
+
+      - name: Build package
+        run: dpkg-buildpackage -us -uc
+
+      - run: ls ../
+
+      # Workaround for https://github.com/actions/upload-artifact/issues/176
+      - name: Get deb file path
+        run: echo "DEB_FILE_PATH=$(realpath ../*.deb)" >> $GITHUB_ENV
+
+      - name: Upload package
+        uses: actions/upload-artifact@v3
+        with:
+          name: debian-package
+          path: ${{ env.DEB_FILE_PATH }}
