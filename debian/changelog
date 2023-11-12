@@ -1,3 +1,9 @@
+ypconfig (1.0.4) stable; urgency=high
+
+  - Update packaging even more
+
+ -- William Edwards <wedwards@cyberfusion.nl>  Sun, 12 Nov 2023 17:28:00 +0200
+
 ypconfig (1.0.3) stable; urgency=high
 
   - Update packaging; compatible with up to Debian 12
