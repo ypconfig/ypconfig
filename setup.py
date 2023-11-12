@@ -2,7 +2,6 @@
 import os
 import sys
 
-from pip.req import parse_requirements
 from setuptools import setup, find_packages
 from ypconfig import __version__
 
