@@ -161,10 +161,6 @@ bond0:
   - eth1
 ```
 
-# NetBox
-
-You can dynamically generate your ypconfig config file from [NetBox](https://github.com/netbox-community/netbox) using `netbox2ypconfig`, which can be found on [PyPI](https://pypi.org/project/netbox2ypconfig/).
-
 # Credits
 
 ypconfig is originally written by Mark Schouten <mark@tuxis.nl>, Tuxis Internet Engineering and shared with the community in June 2017!
