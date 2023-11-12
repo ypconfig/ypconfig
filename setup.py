@@ -38,7 +38,7 @@ setup(
         'Topic :: Software Development :: Libraries :: Python Modules',
         'Topic :: System :: Networking',
         'License :: OSI Approved :: BSD License',
-        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.11',
     ],
     license='BSD 2-Clause',
     setup_requires=reqs,
