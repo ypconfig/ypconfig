@@ -1,8 +1,5 @@
 name: Build Debian package
-on: [push]
-#on:
-#  release:
-#    types: [published]
+on: [push, pull_request]
 
 jobs:
   build:
