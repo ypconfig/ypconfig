@@ -28,8 +28,14 @@ jobs:
       - name: Build package
         run: dpkg-buildpackage -us -uc
 
+      - run: ls ../
+
+      # Workaround for https://github.com/actions/upload-artifact/issues/176
+      - name: Get deb file path
+        run: echo "DEB_FILE_PATH=$(realpath ../*.deb)" >> $GITHUB_ENV
+
       - name: Upload package
         uses: actions/upload-artifact@v3
         with:
           name: debian-package
-          path: ../*.deb
+          path: ${{ env.DEB_FILE_PATH }}
