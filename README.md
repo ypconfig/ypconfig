@@ -2,11 +2,11 @@
 
 ypconfig is a Python (hence the Y instead of the I) tool to configure networking interfaces on a Linux machine. Goal is to be able to configure a machine using [Ansible](http://ansible.com) and be able to rollback if something goes wrong while configuring the interfaces.
 
-This tool is made possible by [pyroute2](https://github.com/svinota/pyroute2), which enables us to communicate with the Linux Netlink interface.
+This tool is made possible by [pyroute2](https://github.com/svinota/pyroute2) which enables us to communicate with the Linux Netlink interface.
 
 # System Requirements
 
-ypconfig works with Python 3. The highest, tested Python version is 3.7. It has been tested on Debian 9 and 10.
+ypconfig supports Python >= 3.11 and has been tested on Debian 12.
 
 # Configuration
 
@@ -75,7 +75,7 @@ ypconfig ships with a systemd unit, `ypconfig.service`. This one-shot service ta
 
 You can commit at any time by running `ypconfig commit`. This will rollback if it doesn't receive your confirmation within 60 seconds. This behaviour can be overridden by running with the `--confirm` flag, but you should probably not do that as it will not rollback when you may need it to. Note that running `--confirm` with a faulty config file will not commit. You can check your config file using `ypconfig configtest`.
 
-All `ypconfig` commands take the argument `--cfg`, which allows you to use a custom config file.
+All `ypconfig` commands take the argument `--cfg` which allows you to use a custom config file.
 
 # Examples
 
@@ -163,4 +163,4 @@ bond0:
 
 # Credits
 
-ypconfig is originally written by Mark Schouten <mark@tuxis.nl>, Tuxis Internet Engineering and shared with the community in June 2017!
+ypconfig was originally written by Mark Schouten <mark@tuxis.nl> at Tuxis. It was open-sourced in June 2017.
