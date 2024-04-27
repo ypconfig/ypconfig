@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 from yaml import safe_load, dump, YAMLError
 from sys import exit
 from copy import deepcopy

@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 from pyroute2 import IPRoute
 from pyroute2 import IPDB
 from socket import AF_INET, AF_INET6
