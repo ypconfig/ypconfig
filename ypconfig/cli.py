@@ -10,15 +10,17 @@ Options:
   --cfg=<configfile>    Location of the configfile [default: /etc/ypconfig/ypconfig.yml]
 """
 
-import sys, os, select
-sys.path.insert(0, os.path.join(os.getcwd(), 'lib'))
+import sys
+import os
+import select
+
+sys.path.insert(0, os.path.join(os.getcwd(), "lib"))
 
 from ypconfig import config, netlink
 from docopt import docopt
-from schema import Schema, And, Or, Use, SchemaError, Optional
-from pprint import pprint
-from pyroute2 import IPRoute
+from schema import Schema, SchemaError
 from time import time
+
 
 def rollback(cfg):
     cur = config.Validate(netlink.GetNow())
@@ -27,32 +29,35 @@ def rollback(cfg):
     print("Rolled back to %s" % (cfg))
     sys.exit(1)
 
+
 def main():
     args = docopt(__doc__)
 
-    schema = Schema({
-        '--help': bool,
-        '--verbose': bool,
-        '--cfg': str,
-        '--confirm': bool,
-        'commit': bool,
-        'configtest': bool,
-        'createconfig': bool
-    })
+    schema = Schema(
+        {
+            "--help": bool,
+            "--verbose": bool,
+            "--cfg": str,
+            "--confirm": bool,
+            "commit": bool,
+            "configtest": bool,
+            "createconfig": bool,
+        }
+    )
 
     try:
         args = schema.validate(args)
     except SchemaError as e:
         sys.exit(e)
 
-    if not args['createconfig']:
+    if not args["createconfig"]:
         try:
-            cfgdoc = config.Get(args['--cfg'])
+            cfgdoc = config.Get(args["--cfg"])
         except FileNotFoundError as e:
             print(e)
             sys.exit(1)
 
-    if args['configtest']:
+    if args["configtest"]:
         try:
             cfg = config.Validate(cfgdoc)
         except Exception as e:
@@ -60,14 +65,14 @@ def main():
             sys.exit(1)
         else:
             print("Configuration is ok!")
-    elif args['createconfig']:
+    elif args["createconfig"]:
         cfg = netlink.GetNow()
         cfg = config.Validate(cfg)
-        config.Set(args['--cfg'], cfg)
-    elif args['commit']:
+        config.Set(args["--cfg"], cfg)
+    elif args["commit"]:
         cur = config.Validate(netlink.GetNow())
-        cfgfile = '_'.join(['ypconfig', 'backup', str(time())])
-        rollbackcfg = os.path.join('/tmp', cfgfile)
+        cfgfile = "_".join(["ypconfig", "backup", str(time())])
+        rollbackcfg = os.path.join("/tmp", cfgfile)
         config.Set(rollbackcfg, cur)
         try:
             new = config.Validate(cfgdoc)
@@ -87,17 +92,20 @@ def main():
             print("Nothing changed")
             sys.exit(0)
 
-        if not args['--confirm']:
-            print("New configuration commited. Type 'confirm' to confirm, we will rollback in 60 seconds otherwise.")
+        if not args["--confirm"]:
+            print(
+                "New configuration commited. Type 'confirm' to confirm, we will rollback in 60 seconds otherwise."
+            )
             try:
-                i, o, e = select.select( [sys.stdin], [], [], 60 )
+                i, o, e = select.select([sys.stdin], [], [], 60)
 
-                if i and sys.stdin.readline().strip() == 'confirm':
+                if i and sys.stdin.readline().strip() == "confirm":
                     sys.exit(0)
                 else:
                     rollback(rollbackcfg)
             except KeyboardInterrupt:
                 rollback(rollbackcfg)
+
 
 if __name__ == "__main__":
     main()

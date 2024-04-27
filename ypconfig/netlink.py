@@ -1,6 +1,6 @@
 from pyroute2 import IPRoute
 from pyroute2 import IPDB
-from socket import AF_INET, AF_INET6
+from socket import AF_INET6
 
 
 def GetNow():
@@ -8,96 +8,102 @@ def GetNow():
     ret = {}
 
     for route in ip.get_routes() + ip.get_routes(family=AF_INET6):
-        if route.get_attr('RTA_GATEWAY'):
+        if route.get_attr("RTA_GATEWAY"):
             try:
-                ret['routes']
+                ret["routes"]
             except KeyError:
-                ret['routes'] = dict()
+                ret["routes"] = dict()
 
-            if not route.get_attr('RTA_DST'):
-                dst = 'default'
+            if not route.get_attr("RTA_DST"):
+                dst = "default"
             else:
-                dst = '/'.join([str(route.get_attr('RTA_DST')), str(route['dst_len'])])
+                dst = "/".join([str(route.get_attr("RTA_DST")), str(route["dst_len"])])
 
             try:
-                ret['routes'][dst]
+                ret["routes"][dst]
             except KeyError:
-                ret['routes'][dst] = list()
+                ret["routes"][dst] = list()
 
-            ret['routes'][dst].append(route.get_attr('RTA_GATEWAY'))
+            ret["routes"][dst].append(route.get_attr("RTA_GATEWAY"))
 
     for iface in ip.get_links():
-        iname = iface.get_attr('IFLA_IFNAME')
+        iname = iface.get_attr("IFLA_IFNAME")
         try:
             this = ret[iname]
         except KeyError:
             this = {}
-            this['type'] = 'default'
+            this["type"] = "default"
 
-        this['name'] = iface.get_attr('IFLA_IFNAME')
-        if iface.get_attr('IFLA_IFALIAS'):
-            this['description'] = iface.get_attr('IFLA_IFALIAS')
+        this["name"] = iface.get_attr("IFLA_IFNAME")
+        if iface.get_attr("IFLA_IFALIAS"):
+            this["description"] = iface.get_attr("IFLA_IFALIAS")
         else:
-            this['description'] = this['name']
+            this["description"] = this["name"]
 
         addrs = []
-        for addr in ip.get_addr(index=iface['index']):
-            if addr.get_attr('IFA_ADDRESS').startswith('fe80:'):
+        for addr in ip.get_addr(index=iface["index"]):
+            if addr.get_attr("IFA_ADDRESS").startswith("fe80:"):
                 # We don't store link-locals
                 continue
-            fa = '/'.join([addr.get_attr('IFA_ADDRESS'), str(addr['prefixlen'])])
+            fa = "/".join([addr.get_attr("IFA_ADDRESS"), str(addr["prefixlen"])])
             addrs.append(fa)
 
         if len(addrs) > 0:
-            this['addresses'] = addrs
+            this["addresses"] = addrs
 
-        this['adminstate'] = iface.get_attr('IFLA_OPERSTATE')
-        this['mtu'] = iface.get_attr('IFLA_MTU')
+        this["adminstate"] = iface.get_attr("IFLA_OPERSTATE")
+        this["mtu"] = iface.get_attr("IFLA_MTU")
 
-        if this['name'] == 'lo':
-            this['type'] = 'loopback'
-            this['adminstate'] = 'UP'
+        if this["name"] == "lo":
+            this["type"] = "loopback"
+            this["adminstate"] = "UP"
 
-
-        if iface.get_attr('IFLA_LINKINFO'):
+        if iface.get_attr("IFLA_LINKINFO"):
             try:
-                linfo = iface.get_attr('IFLA_LINKINFO')
-                if linfo.get_attr('IFLA_INFO_KIND') == 'vlan':
+                linfo = iface.get_attr("IFLA_LINKINFO")
+                if linfo.get_attr("IFLA_INFO_KIND") == "vlan":
                     # Get the parents name
-                    pname = ip.get_links(iface.get_attr('IFLA_LINK'))[0].get_attr('IFLA_IFNAME')
-                    this['type'] = 'vlan'
-                    this['parent'] = pname
-                    this['vlanid'] = linfo.get_attr('IFLA_INFO_DATA').get_attr('IFLA_VLAN_ID')
-                    ret[this['name']] = this
-                elif linfo.get_attr('IFLA_INFO_SLAVE_KIND') == 'bond':
+                    pname = ip.get_links(iface.get_attr("IFLA_LINK"))[0].get_attr(
+                        "IFLA_IFNAME"
+                    )
+                    this["type"] = "vlan"
+                    this["parent"] = pname
+                    this["vlanid"] = linfo.get_attr("IFLA_INFO_DATA").get_attr(
+                        "IFLA_VLAN_ID"
+                    )
+                    ret[this["name"]] = this
+                elif linfo.get_attr("IFLA_INFO_SLAVE_KIND") == "bond":
                     # Get the parents name
-                    pname = ip.get_links(iface.get_attr('IFLA_MASTER'))[0].get_attr('IFLA_IFNAME')
+                    pname = ip.get_links(iface.get_attr("IFLA_MASTER"))[0].get_attr(
+                        "IFLA_IFNAME"
+                    )
                     try:
                         ret[pname]
                     except KeyError:
                         ret[pname] = {}
 
                     try:
-                        ret[pname]['slaves']
+                        ret[pname]["slaves"]
                     except KeyError:
-                        ret[pname]['slaves'] = []
+                        ret[pname]["slaves"] = []
 
-                    ret[pname]['slaves'].append(this['name'])
-                    this['type'] = 'slave'
-                    ret[this['name']] = this
-                elif linfo.get_attr('IFLA_INFO_KIND') == 'bond':
-                    bonddata = linfo.get_attr('IFLA_INFO_DATA')
-                    this['type'] = 'bond'
-                    this['miimon'] = bonddata.get_attr('IFLA_BOND_MIIMON')
-                    this['bond-mode'] = bonddata.get_attr('IFLA_BOND_MODE')
-                    ret[this['name']] = this
+                    ret[pname]["slaves"].append(this["name"])
+                    this["type"] = "slave"
+                    ret[this["name"]] = this
+                elif linfo.get_attr("IFLA_INFO_KIND") == "bond":
+                    bonddata = linfo.get_attr("IFLA_INFO_DATA")
+                    this["type"] = "bond"
+                    this["miimon"] = bonddata.get_attr("IFLA_BOND_MIIMON")
+                    this["bond-mode"] = bonddata.get_attr("IFLA_BOND_MODE")
+                    ret[this["name"]] = this
             except Exception as e:
                 print(e)
                 pass
         else:
-            ret[this['name']] = this
+            ret[this["name"]] = this
 
     return ret
+
 
 def Commit(cur, new):
     global ip
@@ -106,32 +112,32 @@ def Commit(cur, new):
     changed = False
 
     try:
-        curroutes = cur['routes']
-        crouteset = set(cur['routes'].keys())
+        curroutes = cur["routes"]
+        crouteset = set(cur["routes"].keys())
     except KeyError:
         crouteset = set()
 
     try:
-        newroutes = new['routes']
-        nrouteset = set(new['routes'].keys())
+        newroutes = new["routes"]
+        nrouteset = set(new["routes"].keys())
     except KeyError:
         skiproutes = True
         print("No routes configured, skipping routeconfiguration")
 
     try:
-        del(new['routes'])
-    except:
+        del new["routes"]
+    except Exception:
         pass
 
     try:
-        del(cur['routes'])
-    except:
+        del cur["routes"]
+    except Exception:
         pass
 
     curif = set(cur.keys())
     newif = set(new.keys())
 
-    with IPDB(mode='implicit') as ip:
+    with IPDB(mode="implicit") as ip:
         curif = set(cur.keys())
         newif = set(new.keys())
 
@@ -144,16 +150,16 @@ def Commit(cur, new):
         toadd = list()
         for iface in newif.difference(curif):
             changed = True
-            if new[iface]['type'] == 'bond':
+            if new[iface]["type"] == "bond":
                 toadd.insert(0, iface)
-            elif new[iface]['type'] == 'vlan':
+            elif new[iface]["type"] == "vlan":
                 toadd.append(iface)
 
         for iface in toadd:
             changed = True
-            if new[iface]['type'] == 'bond':
+            if new[iface]["type"] == "bond":
                 Addbond(new[iface])
-            elif new[iface]['type'] == 'vlan':
+            elif new[iface]["type"] == "vlan":
                 Addvlan(new[iface])
 
         # Processes changes in remaining interfaces
@@ -161,44 +167,56 @@ def Commit(cur, new):
             c = cur[iface]
             n = new[iface]
 
-            for v in ['description', 'addresses', 'adminstate', 'mtu', 'ratelimit', 'slaves', 'vlanid', 'parent', 'bond-mode', 'miimon', 'lacp_rate']:
+            for v in [
+                "description",
+                "addresses",
+                "adminstate",
+                "mtu",
+                "ratelimit",
+                "slaves",
+                "vlanid",
+                "parent",
+                "bond-mode",
+                "miimon",
+                "lacp_rate",
+            ]:
                 try:
                     n[v]
                 except KeyError:
-                    if v == 'addresses':
+                    if v == "addresses":
                         n[v] = []
                     else:
                         n[v] = None
                 try:
                     c[v]
                 except KeyError:
-                    if v == 'addresses':
+                    if v == "addresses":
                         c[v] = []
                     else:
                         c[v] = None
 
-                if v == 'addresses':
+                if v == "addresses":
                     vaddresses = []
                     try:
-                        vaddresses += n['vaddresses']
+                        vaddresses += n["vaddresses"]
                     except KeyError:
                         pass
                     try:
-                        vaddresses += c['vaddresses']
+                        vaddresses += c["vaddresses"]
                     except KeyError:
                         pass
 
                 try:
                     if n[v] != c[v]:
-                        if v != 'addresses':
+                        if v != "addresses":
                             changed = True
-                        if v == 'adminstate':
+                        if v == "adminstate":
                             Ifstate(iface, n[v])
-                        elif v == 'mtu':
+                        elif v == "mtu":
                             Ifmtu(iface, n[v])
-                        elif v == 'description':
+                        elif v == "description":
                             Ifalias(iface, n[v])
-                        elif v == 'addresses':
+                        elif v == "addresses":
                             for addr in set(n[v]).difference(set(c[v])):
                                 if addr not in vaddresses:
                                     changed = True
@@ -207,15 +225,15 @@ def Commit(cur, new):
                                 if addr not in vaddresses:
                                     changed = True
                                     Deladdr(iface, addr)
-                        elif v == 'slaves':
+                        elif v == "slaves":
                             for slave in set(n[v]).difference(set(c[v])):
                                 Addslave(iface, slave)
                             for slave in set(c[v]).difference(set(n[v])):
                                 Delslave(iface, slave)
-                        elif v in ['vlanid', 'parent']:
+                        elif v in ["vlanid", "parent"]:
                             Delif(iface)
                             Addvlan(new[iface])
-                        elif v in ['bond-mode', 'miimon', 'lacp_rate']:
+                        elif v in ["bond-mode", "miimon", "lacp_rate"]:
                             Delif(iface)
                             Addbond(new[iface])
                 except KeyError as e:
@@ -250,6 +268,7 @@ def Commit(cur, new):
 
         return changed
 
+
 def AddRoute(route, gws):
     print("Adding route for %s/%s" % (route, gws))
     global ip
@@ -257,35 +276,37 @@ def AddRoute(route, gws):
         ip.routes.add(dst=route, gateway=d)
         ip.commit()
 
+
 def DelRoute(route):
     print("Removing route for %s" % (route))
     global ip
     ip.routes.remove(route)
 
+
 def DefaultRoute(gws):
     global ip
-    v6new = [ d for d in gws if ':' in d ]
-    v4new = [ d for d in gws if '.' in d ]
+    v6new = [d for d in gws if ":" in d]
+    v4new = [d for d in gws if "." in d]
     v6cur = list()
     v4cur = list()
     for r in ip.routes:
-        if r['dst_len'] != 0:
+        if r["dst_len"] != 0:
             continue
-        if r['family'] == 10:
-            v6cur.append(r['gateway'])
-        elif r['family'] == 2:
-            v4cur.append(r['gateway'])
+        if r["family"] == 10:
+            v6cur.append(r["gateway"])
+        elif r["family"] == 2:
+            v4cur.append(r["gateway"])
 
     if len(v6new) > len(v6cur):
-        AddRoute('default', v6new)
+        AddRoute("default", v6new)
 
     if len(v4new) > len(v4cur):
-        AddRoute('default', v4new)
+        AddRoute("default", v4new)
 
     for r in ip.routes:
-        if r['dst_len'] != 0:
+        if r["dst_len"] != 0:
             continue
-        if r['family'] == 10:
+        if r["family"] == 10:
             if len(v6new) == 0:
                 r.remove()
             elif len(v6new) == len(v6cur):
@@ -293,8 +314,8 @@ def DefaultRoute(gws):
                     continue
                 r.remove()
                 ip.commit()
-                AddRoute('default', v6new)
-        elif r['family'] == 2:
+                AddRoute("default", v6new)
+        elif r["family"] == 2:
             if len(v4new) == 0:
                 r.remove()
             elif len(v4new) == len(v4cur):
@@ -302,16 +323,18 @@ def DefaultRoute(gws):
                     continue
                 r.remove()
                 ip.commit()
-                AddRoute('default', v4new)
+                AddRoute("default", v4new)
+
 
 def ChangeRoute(route, gws):
     print("Changing route for %s" % (route))
     global ip
-    if route == 'default':
+    if route == "default":
         return DefaultRoute(gws)
 
     for d in gws:
         ip.routes[route].gateway = d
+
 
 def Delif(iface):
     print("Removing interface %s" % (iface))
@@ -320,24 +343,30 @@ def Delif(iface):
     i.remove()
     ip.commit()
 
+
 def Addvlan(vals):
-    print("Creating vlan interface %s on %s with id %s" % (vals['name'], vals['parent'], vals['vlanid']))
+    print(
+        "Creating vlan interface %s on %s with id %s"
+        % (vals["name"], vals["parent"], vals["vlanid"])
+    )
     global ip
-    iface = vals['name']
-    Ifstate(vals['parent'], 'UP')
+    iface = vals["name"]
+    Ifstate(vals["parent"], "UP")
 
-    parent = ip.interfaces[vals['parent']]
+    parent = ip.interfaces[vals["parent"]]
 
-    i = ip.create(kind='vlan', ifname=iface, link=parent, vlan_id=vals['vlanid'], reuse=True)
+    ip.create(
+        kind="vlan", ifname=iface, link=parent, vlan_id=vals["vlanid"], reuse=True
+    )
     ip.commit()
 
-    Ifstate(iface, vals['adminstate'])
+    Ifstate(iface, vals["adminstate"])
 
-    Ifmtu(iface, vals['mtu'])
-    Ifalias(iface, vals['description'])
+    Ifmtu(iface, vals["mtu"])
+    Ifalias(iface, vals["description"])
     try:
-        vals['addresses']
-        for addr in vals['addresses']:
+        vals["addresses"]
+        for addr in vals["addresses"]:
             Addaddr(iface, addr)
     except KeyError:
         pass
@@ -345,34 +374,43 @@ def Addvlan(vals):
         raise e
     ip.commit()
 
+
 def Addbond(vals):
-    print("Creating bond interface %s with %s" % (vals['name'], str(vals)))
+    print("Creating bond interface %s with %s" % (vals["name"], str(vals)))
     global ip
-    iface = vals['name']
-    i = ip.create(kind='bond', ifname=iface, bond_mode=vals['bond-mode'], bond_miimon=vals['miimon'], reuse=True)
-    for child in vals['slaves']:
-        Ifmtu(child, vals['mtu'])
+    iface = vals["name"]
+    ip.create(
+        kind="bond",
+        ifname=iface,
+        bond_mode=vals["bond-mode"],
+        bond_miimon=vals["miimon"],
+        reuse=True,
+    )
+    for child in vals["slaves"]:
+        Ifmtu(child, vals["mtu"])
         Addslave(iface, child)
-    Ifmtu(iface, vals['mtu'])
-    Ifstate(iface, vals['adminstate'])
-    Ifalias(iface, vals['description'])
+    Ifmtu(iface, vals["mtu"])
+    Ifstate(iface, vals["adminstate"])
+    Ifalias(iface, vals["description"])
     try:
-        vals['addresses']
-        for addr in vals['addresses']:
-            Addaddr(vals['name'], addr)
+        vals["addresses"]
+        for addr in vals["addresses"]:
+            Addaddr(vals["name"], addr)
     except KeyError:
         pass
     except Exception as e:
         raise e
     ip.commit()
 
+
 def Addslave(iface, slave):
     print("Adding interface %s as slave on %s" % (slave, iface))
     global ip
-    Ifstate(slave, 'DOWN')
+    Ifstate(slave, "DOWN")
     i = ip.interfaces[iface]
     i.add_port(ip.interfaces[slave])
     ip.commit()
+
 
 def Delslave(iface, slave):
     print("Removing interface %s as slave from %s" % (slave, iface))
@@ -381,12 +419,14 @@ def Delslave(iface, slave):
     i.del_port(slave)
     ip.commit()
 
+
 def Deladdr(iface, addr):
     print("Removing IP %s from %s" % (addr, iface))
     global ip
     i = ip.interfaces[iface]
     i.del_ip(addr)
     ip.commit()
+
 
 def Addaddr(iface, addr):
     print("Adding IP %s to %s" % (addr, iface))
@@ -395,42 +435,45 @@ def Addaddr(iface, addr):
     i.add_ip(addr)
     ip.commit()
 
+
 def Ifstate(iface, state):
     print("Setting state of interface %s to %s" % (iface, state))
     global ip
     i = ip.interfaces[iface]
-    if i['kind'] == 'vlan':
-        p = ip.interfaces[i['link']]
-        if p['operstate'] == 'DOWN' and state == 'UP':
+    if i["kind"] == "vlan":
+        p = ip.interfaces[i["link"]]
+        if p["operstate"] == "DOWN" and state == "UP":
             return
-    if state == 'UP':
+    if state == "UP":
         i.up()
         ip.commit()
-        i.wait_ip('fe80::', mask=64, timeout=5)
-    if state == 'DOWN':
+        i.wait_ip("fe80::", mask=64, timeout=5)
+    if state == "DOWN":
         i.down()
         ip.commit()
+
 
 def Ifmtu(iface, mtu):
     print("Setting MTU of interface %s to %s" % (iface, mtu))
     global ip
     i = ip.interfaces[iface]
-    if int(i['mtu']) != int(mtu):
-        i['mtu'] = int(mtu)
+    if int(i["mtu"]) != int(mtu):
+        i["mtu"] = int(mtu)
         # XXX We do not want this. But untill https://github.com/svinota/pyroute2/issues/349 is fixed, we need it.
         try:
             ip.commit()
-        except:
+        except Exception:
             pass
+
 
 def Ifalias(iface, alias):
     print("Setting alias of interface %s to %s" % (iface, alias))
     global ip
     i = ip.interfaces[iface]
-    if str(i['ifalias']) != str(alias):
-        i['ifalias'] = alias
+    if str(i["ifalias"]) != str(alias):
+        i["ifalias"] = alias
         # XXX We do not want this. But untill https://github.com/svinota/pyroute2/issues/349 is fixed, we need it.
         try:
             ip.commit()
-        except:
+        except Exception:
             pass
