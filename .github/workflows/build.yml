@@ -32,7 +32,7 @@ jobs:
         run: echo "DEB_FILE_PATH=$(realpath ../*.deb)" >> $GITHUB_ENV
 
       - name: Upload package
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: debian-package
           path: ${{ env.DEB_FILE_PATH }}
