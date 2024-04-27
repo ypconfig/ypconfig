@@ -6,9 +6,10 @@ This tool is made possible by [pyroute2](https://github.com/svinota/pyroute2) wh
 
 # Development
 
-Install dev dependencies:
+Run:
 
     pip3 install -r requirements-dev.txt
+    pre-commit install
 
 # System Requirements
 
