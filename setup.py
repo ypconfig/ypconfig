@@ -1,7 +1,6 @@
 from setuptools import setup, find_packages
 from ypconfig import __version__
 
-reqs = ["schema", "pyroute2", "PyYAML", "docopt"]
 
 setup(
     name="ypconfig",
@@ -18,8 +17,12 @@ setup(
         "Programming Language :: Python :: 3.11",
     ],
     license="BSD 2-Clause",
-    setup_requires=reqs,
-    install_requires=reqs,
+    install_requires=[
+        "schema==0.6.5",
+        "pyroute2==0.5.2",
+        "PyYAML==6.0.1",
+        "docopt==0.6.2",
+    ],
     packages=find_packages(exclude=["tests", "tests.*"]),
     platforms=["linux"],
     data_files=[],
