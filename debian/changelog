@@ -1,3 +1,12 @@
+ypconfig (1.0.4) stable; urgency=high
+
+  - Reformat code using Ruff
+  - Update packaging (bump debhelper compat level, drop dh-systemd Build-Depend,
+    don't build with --install-layout=deb)
+  - Drop shebangs from modules
+
+ -- William Edwards <wedwards@cyberfusion.nl>  Sat, 27 Apr 2024 16:57:00 +0200
+
 ypconfig (1.0.3) stable; urgency=high
 
   - Update packaging; compatible with up to Debian 12
