@@ -4,6 +4,12 @@ ypconfig is a Python (hence the Y instead of the I) tool to configure networking
 
 This tool is made possible by [pyroute2](https://github.com/svinota/pyroute2) which enables us to communicate with the Linux Netlink interface.
 
+# Development
+
+Install dev dependencies:
+
+    pip3 install -r requirements-dev.txt
+
 # System Requirements
 
 ypconfig supports Python >= 3.11 and has been tested on Debian 12.
