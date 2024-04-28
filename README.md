@@ -1,8 +1,10 @@
 # ypconfig
 
-ypconfig is a Python (hence the Y instead of the I) tool to configure networking interfaces on a Linux machine. Goal is to be able to configure a machine using [Ansible](http://ansible.com) and be able to rollback if something goes wrong while configuring the interfaces.
+Configure your Linux network interfaces from YAML.
 
-This tool is made possible by [pyroute2](https://github.com/svinota/pyroute2) which enables us to communicate with the Linux Netlink interface.
+ypconfig is a Python tool that configures network interfaces on a Linux machine, according to a YAML config. ypconfig implements the `test && commit || revert` paradigm on Linux, making it ideal to run routers.
+
+This tool is made possible by [pyroute2](https://github.com/svinota/pyroute2) which enables us to communicate with Netlink.
 
 # Development
 
