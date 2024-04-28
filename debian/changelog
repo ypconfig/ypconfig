@@ -1,3 +1,9 @@
+ypconfig (1.0.4.1) stable; urgency=high
+
+  - Start before Keepalived
+
+ -- William Edwards <wedwards@cyberfusion.nl>  Sun, 28 Apr 2024 18:30:00 +0200
+
 ypconfig (1.0.4) stable; urgency=high
 
   - Reformat code using Ruff
