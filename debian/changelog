@@ -1,3 +1,9 @@
+ypconfig (1.1.1) stable; urgency=high
+
+  - Bump version
+
+ -- William Edwards <wedwards@cyberfusion.nl>  Sun, 28 Apr 2024 18:58:00 +0200
+
 ypconfig (1.0.4.1) stable; urgency=high
 
   - Start before Keepalived
@@ -23,6 +29,8 @@ ypconfig (1.0.2) stable; urgency=high
 
   - Bump PyYAML dependency >= 4.2b1 for CVE-217-18342
   - Add python3-pip Build-Dep
+  - Fix bonding. This was broken
+  - New feature: Adding, changing and remove routes from the routingtable
 
  -- Sander Smeenk <sander@bit.nl>  Fri, 13 Sep 2019 11:22:33 +0200
 
