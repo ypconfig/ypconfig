@@ -27,9 +27,4 @@ setup(
     platforms=["linux"],
     data_files=[],
     entry_points={"console_scripts": ["ypconfig = ypconfig.cli:main"]},
-    options={
-        "build_scripts": {
-            "executable": "/usr/bin/python3",
-        },
-    },
 )
