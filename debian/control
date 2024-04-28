@@ -10,5 +10,5 @@ Package: ypconfig
 Architecture: all
 Depends: ${misc:Depends}, ${python3:Depends}, python3-pkg-resources
 Pre-Depends: python3-pip
-Description: ypconfig, talk to Netlink from Python
- ypconfig is able to configure your servers network interfaces from a Yaml file, and rollback if something goes wrong.
+Description: Configure your Linux network interfaces from YAML.
+ ypconfig is a Python tool that configures network interfaces on a Linux machine, according to a YAML config.

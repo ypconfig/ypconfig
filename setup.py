@@ -5,7 +5,7 @@ from ypconfig import __version__
 setup(
     name="ypconfig",
     version=__version__,
-    description="Tools required for ypconfig",
+    description="Configure your Linux network interfaces from YAML.",
     author="Mark Schouten",
     author_email="mark@tuxis.nl",
     url="https://github.com/ypconfig/ypconfig",
