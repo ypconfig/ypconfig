@@ -9,6 +9,5 @@ X-Python-Version: >= 3
 Package: ypconfig
 Architecture: all
 Depends: ${misc:Depends}, ${python3:Depends}, python3-pkg-resources
-Pre-Depends: python3-pip
 Description: Configure your Linux network interfaces from YAML.
  ypconfig is a Python tool that configures network interfaces on a Linux machine, according to a YAML config.
