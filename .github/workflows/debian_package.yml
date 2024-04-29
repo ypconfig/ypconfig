@@ -1,9 +1,13 @@
-name: Build Debian package
-on: [push, pull_request]
+name: Debian package
+on:
+  push:
+    tags:
+    - '*'
 
 jobs:
-  build:
+  build_and_deploy:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -25,14 +29,23 @@ jobs:
       - name: Build package
         run: dpkg-buildpackage -us -uc
 
-      - run: ls ../
+      - run: ls ./ ../
 
       # Workaround for https://github.com/actions/upload-artifact/issues/176
       - name: Get deb file path
         run: echo "DEB_FILE_PATH=$(realpath ../*.deb)" >> $GITHUB_ENV
 
-      - name: Upload package
+      - name: Upload package artifact
         uses: actions/upload-artifact@v4
         with:
           name: debian-package
           path: ${{ env.DEB_FILE_PATH }}
+
+      - name: Upload package to Packagecloud
+        uses: danielmundi/upload-packagecloud@v1
+        with:
+          PACKAGE-NAME: ${{ env.DEB_FILE_PATH }}
+          PACKAGECLOUD-USERNAME: ypconfig
+          PACKAGECLOUD-REPO: ypconfig
+          PACKAGECLOUD-DISTRIB: debian/bookworm
+          PACKAGECLOUD-TOKEN: ${{ secrets.packagecloud_token }}
