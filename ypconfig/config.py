@@ -174,7 +174,7 @@ def Validate(document):
 
         try:
             if iface["vaddresses"]:
-                if isinstance(iface["vaddresses"], list):
+                if not isinstance(iface["vaddresses"], list):
                     raise ValueError("vaddresses should be an array")
             for address in iface["vaddresses"]:
                 try:
@@ -190,7 +190,7 @@ def Validate(document):
 
         try:
             if iface["addresses"]:
-                if isinstance(iface["addresses"], list):
+                if not isinstance(iface["addresses"], list):
                     raise ValueError("Addresses should be an array")
             for address in iface["addresses"]:
                 try:
@@ -233,7 +233,7 @@ def Validate(document):
         try:
             if iface["slaves"]:
                 ret["type"] = "bond"
-                if isinstance(iface["slaves"], list):
+                if not isinstance(iface["slaves"], list):
                     raise ValueError("Slaves should be an array")
                 ret["slaves"] = iface["slaves"]
         except ValueError as e:
