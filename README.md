@@ -6,6 +6,13 @@ ypconfig is a Python tool that configures network interfaces on a Linux machine,
 
 This tool is made possible by [pyroute2](https://github.com/svinota/pyroute2) which enables us to communicate with Netlink.
 
+# Install
+
+ypconfig is available as a Debian package for Bookworm.
+
+* GPG key: https://packagecloud.io/ypconfig/ypconfig/gpgkey
+* Repository: `deb https://packagecloud.io/ypconfig/ypconfig/debian bookworm main`
+
 # Development
 
 Run:
