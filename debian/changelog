@@ -1,3 +1,9 @@
+ypconfig (1.1.1.2) stable; urgency=high
+
+  - Use pybuild
+
+ -- William Edwards <wedwards@cyberfusion.nl>  Mon, 29 Apr 2024 11:36:00 +0200
+
 ypconfig (1.1.1.1) stable; urgency=high
 
   - Fix /usr/sbin/ypconfig shebang
