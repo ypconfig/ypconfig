@@ -18,7 +18,7 @@ setup(
     ],
     license="BSD 2-Clause",
     install_requires=[
-        "schema==0.6.5",
+        "schema==0.7.5",
         "pyroute2==0.7.12",
         "PyYAML==6.0.1",
         "docopt==0.6.2",
