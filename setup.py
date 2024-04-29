@@ -19,8 +19,8 @@ setup(
     license="BSD 2-Clause",
     install_requires=[
         "schema==0.7.5",
-        "pyroute2==0.7.12",
-        "PyYAML==6.0.1",
+        "pyroute2==0.7.2",
+        "PyYAML==6.0",
         "docopt==0.6.2",
     ],
     packages=find_packages(exclude=["tests", "tests.*"]),
