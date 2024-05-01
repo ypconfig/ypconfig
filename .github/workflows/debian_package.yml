@@ -1,4 +1,5 @@
 name: Debian package
+
 on:
   push:
     tags:
@@ -6,6 +7,13 @@ on:
 
 jobs:
   build_and_deploy:
+    strategy:
+      matrix:
+        release: ["bookworm", "bullseye"]
+
+    # Debian packages should be built on Debian, on the release they're intended
+    # for. But, GitHub Actions doesn't support hosted Debian runners. And it's
+    # overkill to set up our own, because building on Ubuntu works well in practice.
     runs-on: ubuntu-latest
 
     steps:
@@ -38,7 +46,7 @@ jobs:
       - name: Upload package artifact
         uses: actions/upload-artifact@v4
         with:
-          name: debian-package
+          name: debian-package-${{ matrix.release }}
           path: ${{ env.DEB_FILE_PATH }}
 
       - name: Upload package to Packagecloud
@@ -47,5 +55,5 @@ jobs:
           PACKAGE-NAME: ${{ env.DEB_FILE_PATH }}
           PACKAGECLOUD-USERNAME: ypconfig
           PACKAGECLOUD-REPO: ypconfig
-          PACKAGECLOUD-DISTRIB: debian/bookworm
+          PACKAGECLOUD-DISTRIB: debian/${{ matrix.release }}
           PACKAGECLOUD-TOKEN: ${{ secrets.packagecloud_token }}
