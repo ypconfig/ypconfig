@@ -20,7 +20,7 @@ setup(
     install_requires=[
         "schema==0.7.5",
         "pyroute2==0.7.2",
-        "PyYAML==6.0",
+        "PyYAML==6.0.1",
         "docopt==0.6.2",
     ],
     packages=find_packages(exclude=["tests", "tests.*"]),
