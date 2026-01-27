@@ -22,7 +22,7 @@ Run:
 
 # System Requirements
 
-ypconfig supports Python >= 3.11 and has been tested on Debian 12.
+ypconfig supports Python >= 3.13 and has been tested on Debian 12.
 
 # Configuration
 
