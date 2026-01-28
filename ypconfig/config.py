@@ -74,7 +74,7 @@ def Validate(document):
             return ipv4("%s/32" % (ip))
 
     def Adminstate(state):
-        if type(int()) == type(state):
+        if isinstance(state, int):
             state = list(["DOWN", "UP"])[state]
 
         if state.upper() in ["UP", "DOWN", "UNKNOWN", "LOWERLAYERDOWN"]:
@@ -120,7 +120,7 @@ def Validate(document):
         ]
 
         try:
-            if type(int()) == type(bmode):
+            if isinstance(bmode, int):
                 bmode = modes[bmode]
         except Exception:
             raise ValueError("Invalid value for bond-mode")
