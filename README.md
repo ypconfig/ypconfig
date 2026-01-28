@@ -8,10 +8,10 @@ This tool is made possible by [pyroute2](https://github.com/svinota/pyroute2) wh
 
 # Install
 
-ypconfig is available as a Debian package for Bookworm.
+ypconfig is available as a Debian package for Trixie.
 
 * GPG key: https://packagecloud.io/ypconfig/ypconfig/gpgkey
-* Repository: `deb https://packagecloud.io/ypconfig/ypconfig/debian bookworm main`
+* Repository: `deb https://packagecloud.io/ypconfig/ypconfig/debian trixie main`
 
 # Development
 
@@ -22,7 +22,7 @@ Run:
 
 # System Requirements
 
-ypconfig supports Python >= 3.11 and has been tested on Debian 12.
+ypconfig supports Python >= 3.13 and has been tested on Debian 12.
 
 # Configuration
 
