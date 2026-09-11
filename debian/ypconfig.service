@@ -3,7 +3,7 @@ Description=Do ypconfig commit
 DefaultDependencies=no
 Wants=network.target
 After=local-fs.target network-pre.target apparmor.service systemd-sysctl.service systemd-modules-load.service
-Before=networking.service ifup@.service keepalived.service
+Before=network.target network-online.target networking.service ifup@.service
 Conflicts=shutdown.target
 
 [Install]

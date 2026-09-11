@@ -1,3 +1,9 @@
+ypconfig (1.2) stable; urgency=high
+
+  - Order ypconfig before network.target and network-online.target
+
+ -- William Edwards <wedwards@cyberfusion.nl>  Fri, 11 Sep 2026 17:04:00 +0200
+
 ypconfig (1.1.2) stable; urgency=high
 
   - Release for Trixie
